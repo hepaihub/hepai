@@ -132,7 +132,8 @@ setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     packages=find_packages(
-        exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
+        exclude=["tests", "*.tests", "*.tests.*", "tests.*"]
+        ),
     # If your package is a single module, use this instead of 'packages':
     # py_modules=['mypackage'],
 
@@ -150,10 +151,11 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Programming Language :: Python :: Implementation :: CPython',
         'Programming Language :: Python :: Implementation :: PyPy'
     ],

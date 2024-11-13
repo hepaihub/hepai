@@ -242,16 +242,8 @@ class HepAI(OpenAI):
         max_retries: int = DEFAULT_MAX_RETRIES,
         default_headers: Mapping[str, str] | None = None,
         default_query: Mapping[str, object] | None = None,
-        # Configure a custom httpx client. See the [httpx documentation](https://www.python-httpx.org/api/#client) for more details.
         http_client: httpx.Client | None = None,
-        # Enable or disable schema validation for data returned by the API.
-        # When enabled an error APIResponseValidationError is raised
-        # if the API responds with invalid data for the expected schema.
-        #
-        # This parameter may be removed or changed in the future.
-        # If you rely on this feature, please open a GitHub issue
-        # outlining your use-case to help us decide if it should be
-        # part of our public interface in the future.
+
         _strict_response_validation: bool = False,
         proxy: str | None = None,
     ) -> None:
@@ -272,7 +264,11 @@ class HepAI(OpenAI):
         
         self.completions = HaiCompletions(client=self)
         self.chat = HaiChat(client=self)
-        pass
+
+        ## 2024.11.13 更新支持DDF Client
+        from hepai.modules.haiddf.client.haiddf_client import HaiDDFClient
+        timeout = None if (timeout == NOT_GIVEN or timeout is None) else timeout
+        self.ddf = HaiDDFClient(api_key=api_key, base_url=base_url, timeout=timeout, proxy=proxy)
     
     @classmethod
     def get_http_client(cls, proxy, **kwargs) -> httpx.Client:
@@ -377,3 +373,55 @@ class HepAI(OpenAI):
             return cast(ResponseT, api_response)
 
         return api_response.parse()
+    
+
+    ### --- 关于DDF Client的函数 --- ###
+    ## # --- 关于User的函数 --- ##
+    def list_users(self):
+        """
+        List all users
+        Note: Only admin can use this function
+        """
+        return self.ddf.user.list_users()
+    
+    def create_user(self, **kwargs):
+        """
+        Create a new user
+        Note: Only admin can use this function
+        """
+        return self.ddf.user.create_user(**kwargs)
+    
+    def delete_user(self, user_id: str):
+        """
+        Delete a user
+        Note: Only admin can use this function
+        """
+        return self.ddf.user.delete_user(user_id=user_id)
+    
+    ### --- 关于Key的函数 --- ###
+    def list_api_keys(self):
+        """
+        List all keys
+        Note: Only admin can use this function
+        """
+        return self.ddf.key.list_api_keys()
+    
+    def create_api_key(self, **kwargs):
+        """
+        Create a new key
+        Note: Only admin can use this function
+        """
+        return self.ddf.key.create_api_key(**kwargs)
+    
+    def delete_api_key(self, api_key_id: str):
+        """
+        Delete a key
+        Note: Only admin can use this function
+        """
+        return self.ddf.key.delete_api_key(api_key_id=api_key_id)
+    
+    def get_remote_model(self, model_name: str):
+        """
+        Get a remote model
+        """
+        return self.ddf.worker.get_remote_model(model_name=model_name)

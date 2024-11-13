@@ -8,4 +8,4 @@ from hai import HaiCompletions, ChatCompletion, ChatCompletionChunk, Stream
 from hai import HaiFile
 
 
-
+from .modules.haiddf.client.haiddf_client import HaiDDFClient
