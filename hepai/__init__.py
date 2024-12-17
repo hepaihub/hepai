@@ -3,9 +3,10 @@
 from hai import *
 
 from hai import __version__
-from hai import HepAI
+# from hai import HepAI
 from hai import HaiCompletions, ChatCompletion, ChatCompletionChunk, Stream
 from hai import HaiFile
 
 
-from .modules.haiddf.client.haiddf_client import HaiDDFClient
+from .components.haiddf.hepai_client import HepAIClient as HepAI
+from .types import HRModel
