@@ -144,6 +144,7 @@ class APIKeyInfo:
     api_key: str = field(default_factory=str, metadata={'description': 'Value of the API key.'})
     alias: Optional[str] = field(default=None, metadata={'description': 'Alias name for the API key.'})
     user_id: Optional[str] = field(default=None, metadata={'description': 'User ID that the API key belongs to.'})
+    username: Optional[str] = field(default=None, metadata={'description': 'Username that the API key belongs to.'})
     expiration_time: Optional[datetime] = field(default=None, metadata={'description': 'Timestamp when the API key expires.'})
     usage_description: Optional[str] = field(default=None, metadata={'description': 'Description of the API key usage.'})
     create_time: Optional[datetime] = field(default=None, metadata={'description': 'Timestamp when the API key was created.'})

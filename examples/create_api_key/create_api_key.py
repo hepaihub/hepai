@@ -24,7 +24,7 @@ user = users.data[-1]  # 获取最后一个用户的ID
 print(f'User: {user}')
 
 api_key: APIKeyInfo = client.create_api_key(
-    user_id=user.id,
+    umt_id=user.umt_id,  # 通过umt_id创建API-KEY
     ) 
 assert isinstance(api_key, APIKeyInfo), f"Create API Key failed, rst: {api_key}"
 print(f'Create API Key success, API-KEY: {api_key}')

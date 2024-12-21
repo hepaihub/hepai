@@ -224,9 +224,10 @@ class BaseAPIResponse(Generic[R]):
             and not origin is list
             and not origin is dict
             and not origin is Union
+            and not Any
             and not issubclass(origin, BaseModel)
             and not is_dataclass(origin)  # haddf2修改，支持dataclass
-            and not Any
+            
         ):
             raise RuntimeError(
                 f"Unsupported type, expected {cast_to} to be a subclass of {BaseModel}, {dict}, {list}, {Union}, {NoneType}, {str} or {httpx.Response}."

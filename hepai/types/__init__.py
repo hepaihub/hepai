@@ -25,3 +25,6 @@ from ..components.haiddf.hclient._hclient import (
     HClient, HClientConfig,
     Stream, ChatCompletion, ChatCompletionChunk,
     )
+
+from ..components.haiddf.worker.worker_app import HWorkerAPP, HWorkerConfig
+from ..components.haiddf.hclient._remote_model import LRModel

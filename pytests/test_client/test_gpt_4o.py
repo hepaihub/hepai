@@ -14,18 +14,27 @@ from hepai.types import Stream, ChatCompletion
 
 
 class TestGPT4o(unittest.TestCase):
-    api_key=os.getenv("DDF_FREE_API_KEY"),
-    api_key = "sk-EqzwdtKMGiJJfMhrPYHmcjAkcBLadcJqzwRKlSItANzJvRJ"
+    api_key=os.getenv("DDF_FREE_API_KEY")
+    base_url=os.getenv("DDF_BASE_URL")
+    # api_key = "sk-EqzwdtKMGiJJfMhrPYHmcjAkcBLadcJqzwRKlSItANzJvRJ"
+    # api_key = "sk-XEAMohAxWvoZiwqvWuyXeSuYWFbChxQbkLoDnzHbZcSONcp"  # customer user
+    # api_key = "sk-DyNDBUwbWAlgnJQnPsXhODaOVDSsUXZdYCzGXMfzgDLedyM"  # internal user
+    # api_key = "sk-WDHTiGuYnUBlAytcuLFNCZmmastRrRnzjJpyHsjpEGWnPhz"  # haichat team
+    # api_key = "sk-ZPYdVGrLEKpzreDMlkUgyMGbvdVOyRvLbCPfaJvUJBUzAsc"
+    # api_key = "sk-fMFpckWOSjjOqaMVpTcyqbhrPiRhzwbjIfjVXAHPtJncZEP"  # haichat自己为自己创建的Key
+    api_key = "sk-PEojMsVcJRZaTBpUwEyfPEfPtiRZLqiLYpohMfCCuUIPmXz"  # app_admin为ddf_plus用户创建的key
+    base_url = "https://aiapi001.ihep.ac.cn/apiv2/v1"
     client = HepAI(
                 api_key=api_key,
-                base_url=os.getenv("DDF_BASE_URL"),
+                base_url=base_url,
             )
     
     def test_gpt_4o(self):
         
         q = "Sai hello"
-        # q = "tell me a joke"
+        
         model = "openai/gpt-4o-mini"
+        # model = "openai/o1-preview"
 
         # 测试非流
         rst: ChatCompletion = self.client.chat.completions.create(
@@ -37,6 +46,7 @@ class TestGPT4o(unittest.TestCase):
         # print(rst.choices[0].message.content)
         print(f"[TestGPT4o] PASSED chat.completion.create")
 
+        q = "tell me a story"
         stream = self.client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": q}],

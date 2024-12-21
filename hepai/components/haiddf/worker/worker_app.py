@@ -8,15 +8,16 @@ from dataclasses import dataclass, field
 from fastapi import FastAPI, APIRouter, Request, HTTPException
 from fastapi.background import BackgroundTasks
 from fastapi.responses import JSONResponse, StreamingResponse, FileResponse, HTMLResponse
-from fastapi.params import Query
 
 import asyncio
 from asyncio import Semaphore
 import threading
 from pydantic import BaseModel
 from logging import Logger
+import httpx
+import markdown
 
-from ._worker_class import HWorkerArgs, HWorkerModel, CommonWorker
+from ._worker_class import HWorkerConfig, HRemoteModel, CommonWorker
 from ._related_class import WorkerStoppedInfo, WorkerInfoRequest, WorkerUnifiedGateRequest
 
 
@@ -28,16 +29,19 @@ class FunctionParamsItem(BaseModel):
 class HWorkerAPP(FastAPI):
     """
     FastAPI app for worker
+    多线程运行，支持多个模型
     """
 
     def __init__(
             self,
-            model: HWorkerModel,
-            worker_config: HWorkerArgs = None,
+            models: HRemoteModel | List[HRemoteModel], 
+            worker_config: HWorkerConfig = None,
             logger: Logger = None,
-            **kwargs):
+            **worker_overrides):
         super().__init__()
-        worker_config = worker_config if worker_config is not None else HWorkerArgs()
+        worker_config = worker_config if worker_config is not None else HWorkerConfig()
+        assert isinstance(worker_config, HWorkerConfig), f"worker_config should be an instance of HWorkerConfig"
+        worker_config.update_from_dict(worker_overrides)
         # 用于控制模型访问的信号量
         self.limit_model_concurrency = worker_config.limit_model_concurrency
         self.model_semaphore: Semaphore = None
@@ -45,9 +49,8 @@ class HWorkerAPP(FastAPI):
 
         self.logger = self.get_logger(logger)
         self.worker = CommonWorker(
-            app=self, model=model, worker_config=worker_config, 
-            logger=self.logger,
-            **kwargs)
+            app=self, models=models, worker_config=worker_config, 
+            logger=self.logger)
         self._init_routers()
 
     def _init_routers(self):
@@ -60,6 +63,7 @@ class HWorkerAPP(FastAPI):
         router = APIRouter(prefix=router_prefix, tags=["worker"])
         router.post("/worker_unified_gate/")(self.worker_unified_gate)
         router.post("/worker_unified_gate/{function}")(self.worker_unified_gate)
+        router.post("/worker_unified_gate/{model}/{function}")(self.worker_unified_gate)  # 多模型模式下，需要指定模型
         router.get("/worker_get_status")(self.worker_get_status)
         router.post("/shutdown_worker")(self.shutdown_worker)
         router.post("/worker/get_worker_info")(self.get_worker_info)  # 这个路由是为了与controller相同的格式，使得client也能调用
@@ -100,19 +104,47 @@ class HWorkerAPP(FastAPI):
             self.model_semaphore.release()
 
     async def index(self):
-        worker_name = self.worker.worker_name
+        worker_name = self.worker.worker_id
+
+        fastapi_docs_url = f"http://{self.host}:{self.port}/docs"
+        async with httpx.AsyncClient() as client:
+            # 请求 FastAPI 文档的内容（假设 `/docs` 页面返回的是 HTML 内容）
+            response = await client.get(fastapi_docs_url)
+            docs_content = response.text
+
+        model_names = [m.name for m in self.worker.models]
+        markdown_content = f"""
+# HepAI Worker API
+- Worker Name: **{worker_name}**
+- Models: **{model_names}**
+"""
+        
+        mrs = self.worker.get_model_resource_info()
+        for mr in mrs:
+            markdown_content += f"""
+### {mr.model_name}
+- Type: {mr.model_type}
+- Functions: {mr.model_functions}
+"""
+        
+        html_mk_content = markdown.markdown(markdown_content)
+
+        
         content = f"""
-        <html>
-            <head>
-                <title>HepAI Worker Info</title>
-            </head>
-            <body>
-                <h1>This is a worker of HepAI Distributed Deployment Framework</h1>
-                <p>Worker Name: <strong>{worker_name}</strong></p>
-                <p>Visit the <a href="/docs">API Documentation</a>.</p>
-            </body>
-        </html>
-        """
+            <html>
+                <head>
+                    <title>HepAI Worker Info</title>
+                </head>
+                <body>
+                    <div style="padding-left: 20px;">
+                        {html_mk_content}
+                    </div>
+                    <div>
+                        {docs_content}
+                    </div>
+                </body>
+            </html>
+            """
         return HTMLResponse(content=content)
     
     # async def local_worker_unified_gate(
@@ -129,6 +161,7 @@ class HWorkerAPP(FastAPI):
     async def worker_unified_gate(
             self,
             function_params: FunctionParamsItem,
+            model: str = None,
             function: str = "__call__",
             ):
         # global model_semaphore, global_counter
@@ -141,9 +174,10 @@ class HWorkerAPP(FastAPI):
         await model_semaphore.acquire()
         try:
             rst = self.worker.unified_gate(
+                model=model,
                 function=function, 
                 args=function_params.args,
-                kwargs=function_params.kwargs,)
+                kwargs=function_params.kwargs)
         except Exception as e:  # 如果出错，也要释放锁
             self.release_model_semaphore()
             raise e
@@ -180,8 +214,8 @@ class HWorkerAPP(FastAPI):
     @classmethod
     def register_worker(
             cls,
-            model: HWorkerModel,
-            worker_config: HWorkerArgs = None,
+            model: HRemoteModel = None,
+            worker_config: HWorkerConfig = None,
             daemon: bool = False,
             standalone: bool = False,
             **kwargs,
@@ -193,6 +227,7 @@ class HWorkerAPP(FastAPI):
             print("Running `worker` in standalone mode.")
             return run_standlone_worker_demo()
         
+        assert model is not None, f"Model should be not None"
         import uvicorn
         app: FastAPI = HWorkerAPP(model, worker_config=worker_config, **kwargs)
         def run_uvicron():

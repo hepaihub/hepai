@@ -28,7 +28,7 @@ def auto_port(port=None, start=42901, **kwargs):
     """
     自动获取端口，返回数字端口号
     """
-    if port == 'auto':
+    if port == 'auto' or port is None or port == 0:
         # 获取所有被占用的端口号
         used_ports = get_used_ports(start=start, **kwargs)
         for i in range(start, 65535):

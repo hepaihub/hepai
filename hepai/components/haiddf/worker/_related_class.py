@@ -12,7 +12,7 @@
 
 from ..base_class._worker_class import (
     ModelResourceInfo, WorkerStatusInfo, WorkerNetworkInfo, WorkerInfo,
-    HRemoteModel, WorkerStoppedInfo
+    HRemoteModel, WorkerStoppedInfo, HRModel
 )
 
 from ..base_class._request_class import WorkerInfoRequest, WorkerUnifiedGateRequest

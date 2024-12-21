@@ -23,14 +23,13 @@ from hepai.types import (
     )
 
 
+client = HepAI(api_key=os.getenv("DDF_APP_ADMIN_API_KEY"), base_url=os.getenv("DDF_BASE_URL"))   
+
 class TestDDFApiKey(unittest.TestCase):
     
     
     def test_api_key(self):
-        client = HepAI(
-                api_key=os.getenv("DDF_APP_ADMIN_API_KEY"),
-                base_url=os.getenv("DDF_BASE_URL"),
-            )   
+        
 
         # 获取用户信息
         # user_info: UserInfo = self.client.get_user_id_by_name("")
@@ -46,21 +45,26 @@ class TestDDFApiKey(unittest.TestCase):
             print(f"[TestAppAdminApiKey] 正确地拒绝了为admin创建api_key: {e}")
         
         # 验证可为其他用户创建api_key
+        # free_user: UserInfo = [u for u in users if u.user_level.to_str() == "free"][0]
+        # api_key: APIKeyInfo = client.create_api_key(user_id=free_user.id)
+        # assert isinstance(api_key, APIKeyInfo), f"Create API Key failed, rst: {api_key}"
+        # print(f"[TestAppAdminApiKey] Create API Key PASSED: {api_key}")
+       
+        # # 成功创建后还需要删除
+        # del_api_key: APIKeyDeletedInfo = client.delete_api_key(api_key.id)
+        # assert isinstance(del_api_key, APIKeyDeletedInfo), f"Delete API Key failed, rst: {del_api_key}"
+        # print(f"[TestAppAdminApiKey] Delete API Key PASASED: {del_api_key}")
+
+        # 验证通过umt_id创建api_key
         free_user: UserInfo = [u for u in users if u.user_level.to_str() == "free"][0]
-        api_key: APIKeyInfo = client.create_api_key(user_id=free_user.id)
+        api_key: APIKeyInfo = client.create_api_key(umt_id=free_user.umt_id)
         assert isinstance(api_key, APIKeyInfo), f"Create API Key failed, rst: {api_key}"
         print(f"[TestAppAdminApiKey] Create API Key PASSED: {api_key}")
-       
+
         # 成功创建后还需要删除
         del_api_key: APIKeyDeletedInfo = client.delete_api_key(api_key.id)
         assert isinstance(del_api_key, APIKeyDeletedInfo), f"Delete API Key failed, rst: {del_api_key}"
         print(f"[TestAppAdminApiKey] Delete API Key PASASED: {del_api_key}")
-        pass
-
-
-    def test_free_api_key(self):
-
-        pass
 
 
 if __name__ == "__main__":

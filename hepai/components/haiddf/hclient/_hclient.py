@@ -13,6 +13,7 @@ import warnings
 from .openai_api import *
 
 from .resources._resource import SyncAPIResource
+from ._exceptions import HAPIStatusError
 
 # from . import resources
 from dataclasses import dataclass, field, asdict
@@ -65,25 +66,45 @@ class HClientConfig:
     http_client: None | httpx.Client  = field(default=None, metadata={"description": "The default HTTP client for all requests"})
     default_headers: Mapping[str, str] = field(default=None, metadata={"description": "The default headers for all requests"})
     default_query: Mapping[str, object] = field(default=None, metadata={"description": "The default query parameters for all requests"})
-    version: str = field(default="2.0.0", metadata={"description": "The version of the client"})
     enable_openai: bool = field(default=True, metadata={"description": "Whether to enable openai resources"})
+    proxy: str = field(default=None, metadata={"description": "The default proxy for all requests"})
+
+    max_connections: int = field(default=1000, metadata={"description": "The maximum number of connections to keep open"})
+    max_keepalive_connections: int = field(default=100, metadata={"description": "The maximum number of idle connections to keep open"})
+    
+    version: str = field(default="2.0.0", metadata={"description": "The version of the client"})
     _strict_response_validation: bool = field(default=False, metadata={"description": "Whether to strictly validate responses"})
     
     def to_dict(self):
         return asdict(self)
     
     def update_by_dict(self, d: dict):
-        unkown_keys = []
+        unknown_keys = []
         for k, v in d.items():
             if hasattr(self, k):
                 setattr(self, k, v)
             else:
-                unkown_keys.append(k)
-        if unkown_keys:
-            warnings.warn(f"[HClientConfig] encountered {len(unkown_keys) }unknown keys when updating config, this keys will be ignored: {unkown_keys}")
+                unknown_keys.append(k)
+        if unknown_keys:
+            warnings.warn(f"[HClientConfig] encountered {len(unknown_keys) } unknown keys when updating config, this keys will be ignored: {unknown_keys}")
         return self
     
-    
+    def instantiate_http_client(self,) -> httpx.Client:
+        """如果http_client为None，则实例化一个httpx.Client"""
+        if self.http_client is None:
+            proxies = None if self.proxy is None else {"https://": self.proxy, "http://": self.proxy}
+            limits = httpx.Limits(max_connections=self.max_connections, max_keepalive_connections=self.max_keepalive_connections)
+            self.http_client = httpx.Client(
+                base_url=self.base_url,
+                timeout=self.timeout,
+                proxies=proxies,
+                transport=None,
+                limits=limits,
+                follow_redirects=True,
+            )
+        return self.http_client
+
+
 class HClient(SyncAPIClient):
     """
     高能AI框架基础客户端
@@ -116,6 +137,10 @@ class HClient(SyncAPIClient):
             raise ValueError(
                 "The base_url client option must be set, you can set it by passing base_url to the client or by setting the environment variable"
             )
+        
+        if (self.config.proxy is not None) and (self.config.http_client is None):
+            print(f'[HClient] Proxy: {self.config.proxy}')
+            self.config.instantiate_http_client()  # 提前实例化http_client，就设置了proxy
 
         super().__init__(
             version=self.config.version,
@@ -184,7 +209,7 @@ class HClient(SyncAPIClient):
             # print(x)
             yield f"data: {json.dumps(x)}\n\n"
 
-    def _make_status_error(self, err_msg: str, *, body: object, response: httpx.Response) -> APIStatusError:
+    def _make_status_error(self, err_msg: str, *, body: object, response: httpx.Response) -> HAPIStatusError:
         """
         Make an APIStatusError from an error message, response body, and response object.
         For example: 
@@ -192,7 +217,7 @@ class HClient(SyncAPIClient):
             body: dict, {'detail': 'API-KEY not provied, please provide API Key in the header by set `Authorization` header'}
             response: httpx.Response, <Response [401]>
         """
-        return APIStatusError(err_msg, body=body, response=response)
+        return HAPIStatusError(err_msg, body=body, response=response)
         
         
         # return super()._make_status_error(err_msg, body=body, response=response)

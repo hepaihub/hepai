@@ -21,14 +21,14 @@ class LRemoteModel:
         if not isinstance(worker_info, WorkerInfo):
             raise ValueError(f"Failed to get remote model: {worker_info}")
 
-        model_resource = worker_info.get_model_resource(model_name=name)
-        model_functions = model_resource.model_functions
-        # model_functions = ["train", "__call__"]
-        if len(model_functions) == 0:
+        self.model_resource = worker_info.get_model_resource(model_name=name)
+        self.model_functions = self.model_resource.model_functions
+        # self.model_functions = ["train", "__call__"]
+        if len(self.model_functions) == 0:
             raise ValueError(f"Remote model `{self.name}` has no functions can be called remotely, please check the worker model.")
 
         # 自动注册远程模型的函数
-        for func in model_functions:
+        for func in self.model_functions:
             original_func = self.function_warpper(self.name, func)
             # Use functools.wraps to preserve original function metadata when creating new methods
             # @functools.wraps(original_func)
@@ -56,3 +56,13 @@ class LRemoteModel:
     
     def __call__(self, *args, **kwargs):
         return self.function_warpper(self.name, '__call__')(*args, **kwargs)
+
+    def functions(self):
+        return self.model_functions
+
+
+class LRModel(LRemoteModel):
+    """
+    Alias of Local Remote Model
+    """
+    ...

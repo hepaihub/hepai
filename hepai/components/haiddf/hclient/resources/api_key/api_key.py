@@ -29,6 +29,7 @@ class Key(SyncAPIResource):
             key_name: str = "Default",
             valid_time: int = 30,
             user_id: str = None,
+            umt_id: str = None,
             allowed_models: Union[str, Dict] = "all",
             remarks: str = "",
             ):
@@ -36,6 +37,7 @@ class Key(SyncAPIResource):
             "key_name": key_name,
             "valid_time": valid_time,
             "user_id": user_id,
+            "umt_id": umt_id,
             "allowed_models": allowed_models,
             "remarks": remarks,
         }

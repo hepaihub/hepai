@@ -1,6 +1,7 @@
 from typing import Literal
 from typing_extensions import override
 
+
 class NotGiven:
     """
     A sentinel singleton class used to distinguish omitted keyword arguments
