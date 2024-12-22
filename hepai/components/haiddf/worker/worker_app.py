@@ -17,7 +17,7 @@ from logging import Logger
 import httpx
 import markdown
 
-from ._worker_class import HWorkerConfig, HRemoteModel, CommonWorker
+from ._worker_class import HWorkerConfig, HRemoteModel, CommonWorker, ModelResourceInfo
 from ._related_class import WorkerStoppedInfo, WorkerInfoRequest, WorkerUnifiedGateRequest
 
 
@@ -35,7 +35,7 @@ class HWorkerAPP(FastAPI):
     def __init__(
             self,
             models: HRemoteModel | List[HRemoteModel], 
-            worker_config: HWorkerConfig = None,
+            worker_config: HWorkerConfig = None,  # Alias of config
             logger: Logger = None,
             **worker_overrides):
         super().__init__()
@@ -68,6 +68,7 @@ class HWorkerAPP(FastAPI):
         router.post("/shutdown_worker")(self.shutdown_worker)
         router.post("/worker/get_worker_info")(self.get_worker_info)  # 这个路由是为了与controller相同的格式，使得client也能调用
         router.post("/worker/unified_gate")(self.worker_unified_gate)  # 这个路由是为了与controller相同的格式，使得client也能调用
+        router.get("/models")(self.get_models)
 
         self.include_router(router)
 
@@ -198,6 +199,13 @@ class HWorkerAPP(FastAPI):
         与controller的worker_info接口一致，以便client调用
         """
         return self.worker.get_worker_info()
+
+    async def get_models(self):
+        mrs: List[ModelResourceInfo] = self.worker.get_model_resource_info()
+        return {
+            "object": "list",
+            "data": [mr.to_dict() for mr in mrs],
+        }
     
     
     async def shutdown_worker(self, background_tasks: BackgroundTasks):
@@ -239,6 +247,10 @@ class HWorkerAPP(FastAPI):
             return app.worker.get_worker_info()
         else:  # 正常模式，app worker在前台运行
             run_uvicron()
+
+    def run(self):
+        import uvicorn
+        uvicorn.run(self, host=self.host, port=self.port)
 
 
 

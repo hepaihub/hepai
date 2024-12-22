@@ -7,41 +7,40 @@ https://github.com/zhangzhengde0225/CDNet/blob/master/docs/DATASETS.md)
 [![Datasets](https://img.shields.io/static/v1?label=Download&message=source_code&color=orange)](
 https://github.com/zhangzhengde0225/CDNet/archive/refs/heads/master.zip) -->
 
-#### 简体中文 | [English](https://github.com/zhangzhengde0225/hai/blob/main/docs/readme_en.md)
+#### English | [简体中文](https://github.com/zhangzhengde0225/hai/blob/main/docs/readme_zh_cn.md)
 
-# 高能AI框架HepAI
-HepAI是一个AI开源框架，是高能AI平台的核心技术，应用此技术可以加速多学科场景的科学研究，简化模型迭代和流程，是开发AI算法和应用的共性基础。
+# HepAI Library
+This is [HepAI](https://ai.ihep.ac.cn) python library, the AI platform can accelerate scientific research in multidisciplinary scenarios, simplify model iteration and flow, and is a common infrastructure for the development of AI algorithms and applications.
 
-HepAI平台本身是一个软件系统，承载AI算法模型，提供AI计算能力，打通数据通道，并开展AI培训。
+The HepAI platform itself is a software system that carries AI algorithm models, provides AI computing power, connects data channels, and conducts AI training.
 
-HepAI框架集成了高能物理领域的经典和最先进（SOTA）的人工智能算法。用户可以通过统一接口访问相关的算法模型、数据集和计算资源，使AI的应用变得简单高效。
+The HepAI framework integrates classic and state-of-the-art (SOTA) artificial intelligence algorithms in the field of high-energy physics. One can access related algorithm models, datasets, and computational resources through a unified interface, making the application of AI simple and efficient.
 
 <details open>
 <summary><b>News</b></summary>
 
-+ [2024.12.22] v1.1.16 支持远程模型！[点此查看详情](https://aiapi001.ihep.ac.cn/mkdocs/workers/)
-+ [2024.05.16] v1.1.9 HepAI Client支持GPT-4o系列模型。
++ [2024.12.22] v1.1.16 支持远程模型！[详情](https://aiapi001.ihep.ac.cn/mkdocs/workers/)
++ [2024.05.16] v1.1.9 HepAI Client支持GPT-4o, 调用方法:
 + [2024.03.26] v1.0.21 Make LLM request like OpenAI via HepAI object.
 + [2023.10.24] v1.0.18 接入dalle文生图模型，调用方法教程见[此处](https://note.ihep.ac.cn/s/EG60U1Rtf)。
 + [2023.04.21] v1.0.7通过hepai使用GPT-3.5，[hepai_api.md](docs/hepai_api.md).
 + [2023.02.09] 基于ChatGPT的**HaiChatGPT**已上线，使用简单，无需梯子！详情查看：[HaiChatGPT](https://code.ihep.ac.cn/zdzhang/haichatgpt).
-+ [2023.01.16] 支持华为NPU服务器，如有算法国产化需求，请查阅[NPU文档](docs/computing_power/npu_power_doc.md)。
++ [2023.01.16] 华为NPU服务器上架，如有算法国产化需求，请查阅[NPU文档](docs/computing_power/npu_power_doc.md)。
 + [2022.10.20] HAI v1.0.6-Beta 第一个测试版本发布，4个算法和3个数据集
 + [2022.08.23] HAI v1.0.0
 </details>
 
 <details open>
-<summary><b>教程</b></summary>
+<summary><b>Tutorials</b></summary>
 
-[使用远程模型实现分布式模型、工具及智能体组件](https://aiapi001.ihep.ac.cn/mkdocs/workers/)
-[60+深度学习论文代码的实现和解释 ](https://ai.ihep.ac.cn/tutorial/code/)
-[在HPC计算集群中使用HepAI的快速入门](docs/quickstart_hpc.md)
-[使用PointNet在JUNO实验中重建和识别大气中微子](https://code.ihep.ac.cn/zhangyiyu/pointnet)
+[Quick Start to Using HepAI on Computing Clusters](docs/quickstart_hpc.md)
+
+[Reconstruction and identification of atmospheric neutrinos in JUNO experiments using PointNet](https://code.ihep.ac.cn/zhangyiyu/pointnet)
 
 </details>
 
 <details open>
-<summary><b>模型Zoo</b></summary>
+<summary><b>Algorithm Zoo</b></summary>
 <a href="https://code.ihep.ac.cn/zdzhang/hai/-/blob/main/docs/model_zoo.md">
     <ul>
     <li>
@@ -62,7 +61,7 @@ HepAI框架集成了高能物理领域的经典和最先进（SOTA）的人工�
 </details>
 
 <details open>
-<summary><b>数据集Zoo</b></summary>
+<summary><b>Dataset Zoo</b></summary>
 <a href="https://code.ihep.ac.cn/zdzhang/hai/-/blob/main/docs/datasets.md">
 <ul>
 <li>
@@ -73,7 +72,7 @@ HepAI框架集成了高能物理领域的经典和最先进（SOTA）的人工�
 </details>
 
 
-### 快速开始
+### Quick start
 ```
 pip install hepai --upgrade
 hai -V  # 查看版本
@@ -90,7 +89,7 @@ hai -V  # 查看版本
 
     python库统一接口：
     ```python
-    import hepai as hai
+    import hai
     
     model = hai.hub.load('<model_name>')  # 加载模型
     config = model.config  # 获取模型配置
@@ -114,10 +113,10 @@ hai -V  # 查看版本
     pip install hai-client
     ```
     ```python
-    from hepai import HepAI
-    
-    client = HepAI()
-    models = client.list_models()
-    response = client.chat.completion.create(model="hepai/xiwu_v2", prompt="你好", max_tokens=100)
-    print(response.choices[0].text)
+    import hai_client
+    hai = hai_client.HAI()
     ```
+    或其他支持gRPC的语言，详见[deploy](docs/deploy.md)
+
+
+note

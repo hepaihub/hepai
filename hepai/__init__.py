@@ -9,4 +9,4 @@ from hai import HaiFile
 
 
 from .components.haiddf.hepai_client import HepAIClient as HepAI
-from .types import HRModel, LRModel
+from .types import HRModel, LRModel, HModelConfig, HWorkerConfig, HWorkerAPP

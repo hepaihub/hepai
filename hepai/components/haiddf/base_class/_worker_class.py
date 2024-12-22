@@ -8,6 +8,14 @@ from typing import List, Dict, Literal, Union, Optional, Any
 import json
 import inspect
 
+@dataclass
+class permission:
+    groups: List[str] = field(default_factory=list, metadata={"help": "Model's groups"})
+    users: List[str] = field(default_factory=list, metadata={"help": "Model's users"})
+    owner: Union[str, None] = field(default=None, metadata={"help": "Model's owner"})
+
+    def to_dict(self):
+        return asdict(self)
 
 @dataclass
 class HModelConfig:
@@ -86,6 +94,26 @@ class BaseWorkerModel:
         
         model: LRModel = client.get_remote_model(model_name=name)
         return model
+    
+    @classmethod
+    def list_models(
+        cls,
+        base_url: str = None,  # 远程模型的地址
+        **kwargs,
+        ):
+        import logging
+        import httpx
+        # 将 httpx 的日志记录级别调整为 WARNING
+        logging.getLogger("httpx").setLevel(logging.WARNING)
+
+        base_url = base_url if base_url else "http://localhost:4260/apiv2"
+        
+        from hepai import HepAI
+        client = HepAI(base_url=base_url,**kwargs)
+
+        from ..hclient._remote_model import LRModel
+        models = client.models.list()
+        return models
 
 
 DEFAULT_STREAM_DATA = [
@@ -171,7 +199,8 @@ class ModelResourceInfo:
     model_users: List[str] = field(default_factory=list, metadata={"help": "Model's users"})
     model_functions: List[str] = field(default_factory=list, metadata={"help": "Model's functions that can be called by remote"})
 
-
+    def to_dict(self):
+        return asdict(self)
 
 @dataclass
 class WorkerStatusInfo:
