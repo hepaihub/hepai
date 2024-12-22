@@ -146,3 +146,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+
+# 明确不忽略adapted_openai下的lib
+!hepai/components/haiddf/hclient/openai_api/adapted_openai/lib
