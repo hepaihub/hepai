@@ -110,9 +110,6 @@ hai -V  # 查看版本
     hai start server  # 启动服务
     ```
     客户端
-    ```bash
-    pip install hai-client
-    ```
     ```python
     from hepai import HepAI
     
