@@ -51,11 +51,11 @@ HepAI框架集成了高能物理领域的经典和最先进（SOTA）的人工�
     <li>
     <img src="https://img.shields.io/static/v1?style=social&label=同步辐射&message=2 TODO">
     <li>
-    <img src="https://img.shields.io/static/v1?style=social&label=中子物理&message=0">
+    <img src="https://img.shields.io/static/v1?style=social&label=中子科学&message=1 TODO">
     <li>
     <img src="https://img.shields.io/static/v1?style=social&label=通用神经网络&message=2 online, 5 TODO">
     <li>
-    <img src="https://img.shields.io/static/v1?style=social&label=经典机器学习&message=TODO">
+    <img src="https://img.shields.io/static/v1?style=social&label=经典机器学习&message=2 TODO">
     </ul>
     </a>
     
