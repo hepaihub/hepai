@@ -23,13 +23,13 @@ from hepai.types import (
     )
 
 
-client = HepAI(api_key=os.getenv("DDF_APP_ADMIN_API_KEY"), base_url=os.getenv("DDF_BASE_URL"))   
+
 
 class TestDDFApiKey(unittest.TestCase):
     
     
     def test_api_key(self):
-        
+        client = HepAI(api_key=os.getenv("DDF_APP_ADMIN_API_KEY"), base_url=os.getenv("DDF_BASE_URL"))   
 
         # 获取用户信息
         # user_info: UserInfo = self.client.get_user_id_by_name("")
@@ -67,7 +67,19 @@ class TestDDFApiKey(unittest.TestCase):
         print(f"[TestAppAdminApiKey] Delete API Key PASASED: {del_api_key}")
 
 
+    def verify_api_key_on_ddf1(self):
+        BASE_URL = "https://aiapi.ihep.ac.cn/v1"  # 基础url
+        hepai_api_key_v1 = os.getenv("HEPAI_API_KEY")
+        BASE_URL2 = "https://aiapi001.ihep.ac.cn/apiv2"  # 基础url
+        hepai_api_key_v2 = os.getenv("HEPAI_API_KEY2")
+        client = HepAI(
+            api_key=hepai_api_key_v2, 
+            base_url = BASE_URL2)
+        User =  client.verify_api_key(os.getenv("HEPAI_API_KEY"), version="v2")
+        print(f"[TestDDFApiKey] Verify API Key on DDF1 PASSED: {User}")
+
 if __name__ == "__main__":
     # unittest.main()
 
-    TestDDFApiKey().test_api_key()
+    # TestDDFApiKey().test_api_key()
+    TestDDFApiKey().verify_api_key_on_ddf1()

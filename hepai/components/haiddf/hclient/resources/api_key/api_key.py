@@ -57,11 +57,13 @@ class Key(SyncAPIResource):
             cast_to=APIKeyDeletedInfo,
         )
     
-    def get_info(self, api_key: str):
+    def get_info(self, api_key: str, version: str = "v2"):
         payload = {
             "api_key": api_key,
         }
+        url = f"{self.prefix}/verify_api_key" if version == "v2" else f"/verify_api_key"
         return self._post(
-            f"{self.prefix}/info",
+            f"{url}",
             body=payload,
+            cast_to=Dict,
         )

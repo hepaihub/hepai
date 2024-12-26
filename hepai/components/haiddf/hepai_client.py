@@ -183,3 +183,6 @@ class HepAIClient(HClient):
         Note: Only admin can use this function
         """
         return self.key.delete_api_key(api_key_id=api_key_id)
+    
+    def verify_api_key(self, api_key: str, version: str = "v2"):
+        return self.key.get_info(api_key=api_key, version = version)

@@ -1,5 +1,6 @@
 # 更新日志
 
++ 2024.12.26 v1.1.19 添加了verify_api_key方法，适配了DDF1 和 DDF2的api_key验证。
 + 2024.12.22 v1.1.15 更新HepAI remote model
 + 2024.09.29 v1.1.11 更新hepai_object, 支持OpenAI v1.50.2的retries_taken参数
 + 2024.07.01 v1.1.10 更新HepAI client，支持验证api_key，client.verify_api_key(api_key=api_key)
