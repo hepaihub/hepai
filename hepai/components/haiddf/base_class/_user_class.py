@@ -2,7 +2,7 @@ from dataclasses import dataclass, field, asdict
 from typing import Optional, List, Union, Dict
 from datetime import datetime
 import uuid
-from dateutil.relativedelta import relativedelta
+
 
 @dataclass
 class UserGroupInfo:
@@ -36,6 +36,7 @@ class UserLevelInfo:
     def __post_init__(self):
         # 如果没有传入expiration_time，自动设置PLUS用户的过期时间为1个月
         if self.expiration_time is None and self.user_level == 'plus':
+            from dateutil.relativedelta import relativedelta
             self.expiration_time = datetime.now() + relativedelta(months=1)
         pass
 

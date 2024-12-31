@@ -92,12 +92,13 @@ class HClientConfig:
     def instantiate_http_client(self,) -> httpx.Client:
         """如果http_client为None，则实例化一个httpx.Client"""
         if self.http_client is None:
-            proxies = None if self.proxy is None else {"https://": self.proxy, "http://": self.proxy}
+            # proxies = None if self.proxy is None else {"https://": self.proxy, "http://": self.proxy}
             limits = httpx.Limits(max_connections=self.max_connections, max_keepalive_connections=self.max_keepalive_connections)
             self.http_client = httpx.Client(
                 base_url=self.base_url,
                 timeout=self.timeout,
-                proxies=proxies,
+                # proxies=proxies,
+                proxy=self.proxy,
                 transport=None,
                 limits=limits,
                 follow_redirects=True,

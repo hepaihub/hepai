@@ -15,7 +15,7 @@ import threading
 from pydantic import BaseModel
 from logging import Logger
 import httpx
-import markdown
+# import markdown
 
 from ._worker_class import HWorkerConfig, HRemoteModel, CommonWorker, ModelResourceInfo
 from ._related_class import WorkerStoppedInfo, WorkerInfoRequest, WorkerUnifiedGateRequest
@@ -127,7 +127,7 @@ class HWorkerAPP(FastAPI):
 - Type: {mr.model_type}
 - Functions: {mr.model_functions}
 """
-        
+        import markdown
         html_mk_content = markdown.markdown(markdown_content)
 
         

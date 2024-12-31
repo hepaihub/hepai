@@ -21,4 +21,8 @@ uvicorn  # for hai worker
 
 openai>=1.50.1
 
+python-dateutil  # for relativedelta
+
+httpx>=0.28.1
+
 
