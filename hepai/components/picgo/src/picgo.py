@@ -1,15 +1,16 @@
 import subprocess
 import os
-from colorama import init, Fore, Style
+# from colorama import init, Fore, Style
 
-image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.tif', '.webp', '.svg'}
+
 
 class Picgo:
     def __init__(self):
-        pass
+        self.image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.heic', '.webp', '.avif'}
+        self.supported_formats = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'heic', 'webp', 'avif']
     
     def upload(self, image_path):
-        print(Fore.YELLOW +"[Picgo img_path:]" + Style.RESET_ALL, image_path)
+        # print(Fore.YELLOW +"[Picgo img_path:]" + Style.RESET_ALL, image_path)
         
         if not isinstance(image_path, str) or not image_path.strip():
             return f"Not A Valid Path: {image_path}"
@@ -26,7 +27,7 @@ class Picgo:
         image_path_is_img = image_path_is_img.lower()
     
         # 检查文件扩展名是否在图片格式列表中
-        if not image_path_is_img in image_extensions:
+        if not image_path_is_img in self.image_extensions:
             return f"Not A Valid Image File: {image_path}"  
         
         result = subprocess.run(
@@ -46,5 +47,10 @@ class Picgo:
         else:
             return None
         
+    def get_supported_formats(self):
+        """
+        返回一个包含所有支持的图片格式后缀的列表。
+        """
+        return self.supported_formats
         # except Exception as e:
         # print(f"An exception occurred: {e}")

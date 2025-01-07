@@ -1,5 +1,5 @@
 import sys
-print(sys.path)
+# print(sys.path)s
 
 from pathlib import Path
 here = Path(__file__).parent
@@ -18,8 +18,9 @@ def run(img_path:str):
 
 def main():
     
-    # picgo = Picgo()
-    print(run("/home/jzy/VSProjects/hai/demo.png"))
+    picgo = Picgo()
+    # print(run("/home/jzy/VSProjects/hai/demo.png"))
+    print(picgo.get_supported_formats())
 
 if __name__ == "__main__":
     main()
