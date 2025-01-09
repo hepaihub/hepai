@@ -12,6 +12,8 @@ except:
     from hepai import HepAI
 from hepai.types import Stream, ChatCompletion
 
+from hepai import AsyncHepAI
+
 
 class TestGPT4o(unittest.TestCase):
     api_key=os.getenv("DDF_FREE_API_KEY")

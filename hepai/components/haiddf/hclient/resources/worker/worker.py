@@ -1,7 +1,7 @@
 
 from typing import Dict, Any
 from ..._types import Stream
-from .._resource import SyncAPIResource
+from .._resource import SyncAPIResource, AsyncAPIResource
 
 from ..._return_class import (
     HWorkerListPage,
@@ -127,3 +127,8 @@ class Worker(SyncAPIResource):
         
         from ..._related_class import HWorkerAPP
         return HWorkerAPP.register_worker(model=model, daemon=daemon, standalone=standalone)
+    
+
+
+class AsyncWorker(AsyncAPIResource):
+    pass

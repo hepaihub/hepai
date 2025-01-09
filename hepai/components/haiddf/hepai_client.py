@@ -4,7 +4,7 @@ v2.0 基于HClient的客户端
 from dataclasses import dataclass, field, asdict
 
 
-from .hclient import HClient, HClientConfig
+from .hclient import HClient, HClientConfig, AsyncHClient
 from .hclient import resources
 
 from .hclient._related_class import HRemoteModel, WorkerInfo, WorkerStatusInfo, WorkerStoppedInfo
@@ -186,3 +186,143 @@ class HepAIClient(HClient):
     
     def verify_api_key(self, api_key: str, version: str = "v2"):
         return self.key.get_info(api_key=api_key, version = version)
+    
+
+class AsyncHepAIClient(AsyncHClient):
+    """
+    HepAI Client v2.0 (Asynchronous)
+
+    Usage:
+        ```python
+        client = AsyncHepAIClient()
+        await client.list_workers()
+        ```
+    """
+
+    def __init__(
+            self, 
+            config: HClientConfig = None,
+            **overrides,
+            ):
+        config = config or HClientConfig()
+        super().__init__(config, **overrides)
+
+        self.worker = resources.AsyncWorker(self)
+        self.key = resources.AsyncKey(self)
+        self.user = resources.AsyncUser(self)
+
+    ## --- 关于Worker的函数 --- ## 
+    async def list_workers(self):
+        return await self.worker.list_workers()
+    
+    async def get_worker_info(
+            self, 
+            worker_id: str = None, 
+            model_name: str = None,
+            ) -> WorkerInfo:
+        """
+        Get worker info by worker_id via http request
+        """
+        return await self.worker.get_info(worker_id=worker_id, model_name=model_name)
+    
+    async def get_worker_status(self, worker_id: str, refresh: bool = False) -> WorkerStatusInfo:
+        """
+        Get worker status by worker_id via http request
+        """
+        return await self.worker.get_status(worker_id=worker_id, refresh=refresh)
+
+    async def stop_worker(self, worker_id: str, permanent: bool = False) -> WorkerStoppedInfo:
+        """
+        Stop worker by worker_id via http request
+        """
+        return await self.worker.stop(worker_id=worker_id, permanent=permanent)
+
+    async def refresh_all_workers(self) -> dict:
+        """
+        Refresh all workers
+        """
+        return await self.worker.refresh_all()
+    
+    async def get_remote_model(self, model_name: str) -> LRemoteModel:
+        """
+        Get a remote model
+        """
+        return await self.worker.get_remote_model(model_name=model_name)
+    
+    async def request_worker(
+            self,
+            target: dict,
+            args: list = None,
+            kwargs: dict = None,
+            ):
+        """
+        Request worker via http request
+        """
+        return await self.worker.request(target=target, args=args, kwargs=kwargs)
+
+    async def register_worker(
+            self,
+            model: HRemoteModel,
+            daemon: bool = False,
+            standalone: bool = False,
+            ):
+        """
+        Register a worker to the server
+        """
+        return await self.worker.register(model, daemon=daemon, standalone=standalone)
+    
+    async def run_demo_worker_and_register(self):
+        return await self.worker.register(standalone=True)
+
+    ## # --- 关于User的函数 --- ##
+    async def list_users(self):
+        """
+        List all users
+        Note: Only admin can use this function
+        """
+        return await self.user.list_users()
+    
+    async def create_user(self, **kwargs):
+        """
+        Create a new user
+        Note: Only admin can use this function
+        """
+        return await self.user.create_user(**kwargs)
+    
+    async def delete_user(self, user_id: str):
+        """
+        Delete a user
+        Note: Only admin can use this function
+        """
+        return await self.user.delete_user(user_id=user_id)
+    
+    async def auth_user(self, username: str, password: str):
+        """
+        Auth a user by username and password
+        """
+        return await self.user.auth_user(username=username, password=password)
+
+    ### --- 关于Key的函数 --- ###
+    async def list_api_keys(self):
+        """
+        List all keys
+        Note: Only admin can use this function
+        """
+        return await self.key.list_api_keys()
+    
+    async def create_api_key(self, **kwargs):
+        """
+        Create a new key
+        Note: Only admin and app admin can use this function
+        """
+        return await self.key.create_api_key(**kwargs)
+    
+    async def delete_api_key(self, api_key_id: str):
+        """
+        Delete a key
+        Note: Only admin can use this function
+        """
+        return await self.key.delete_api_key(api_key_id=api_key_id)
+    
+    async def verify_api_key(self, api_key: str, version: str = "v2"):
+        return await self.key.get_info(api_key=api_key, version=version)

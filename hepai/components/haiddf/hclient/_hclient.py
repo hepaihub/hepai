@@ -4,7 +4,7 @@
 
 import os
 import json
-from typing import Mapping, Generator, Dict
+from typing import Mapping, Generator, Dict, AsyncGenerator
 from typing_extensions import override
 import httpx
 import warnings
@@ -225,7 +225,104 @@ class HClient(SyncAPIClient):
 
 
 class AsyncHClient(AsyncAPIClient):
-    pass
+    """
+    高能AI框架基础异步客户端
+    """
+    NotGiven = NOT_GIVEN
+
+    def __init__(
+            self,
+            config: HClientConfig = None,
+            **overrides,  # 用于覆盖默认配置
+    ):
+        self.config = config or HClientConfig()
+        if overrides:
+            self.config.update_by_dict(overrides)
+        
+        api_key = self.config.api_key
+        if api_key == NOT_GIVEN:  # 人为设置为NOT_GIVEN时，不报错
+            pass
+        elif api_key is None:
+            raise ValueError(
+                "The api_key client option must be set either by passing api_key to the client or by setting the environment variable"
+            )
+        self.api_key = api_key
+
+        if self.config.base_url == NOT_GIVEN:
+            self.config.base_url = httpx.URL("")
+            pass
+        elif self.config.base_url is None:
+            raise ValueError(
+                "The base_url client option must be set, you can set it by passing base_url to the client or by setting the environment variable"
+            )
+        
+        if (self.config.proxy is not None) and (self.config.http_client is None):
+            print(f'[AsyncHClient] Proxy: {self.config.proxy}')
+            self.config.instantiate_http_client()  # 提前实例化http_client，就设置了proxy
+
+        super().__init__(
+            version=self.config.version,
+            base_url=self.config.base_url,
+            max_retries=self.config.max_retries,
+            timeout=self.config.timeout,
+            http_client=self.config.http_client,
+            custom_headers=self.config.default_headers,
+            custom_query=self.config.default_query,
+            _strict_response_validation=self.config._strict_response_validation,
+        )
+
+        if self.config.enable_openai:
+            """集成openai的resources"""
+            from .openai_api import resources
+            self.completions = resources.AsyncCompletions()
+            self.chat = resources.AsyncChat(self)
+            self.embeddings = resources.AsyncEmbeddings(self)
+            self.files = resources.AsyncFiles(self)
+            self.images = resources.AsyncImages(self)
+            self.audio = resources.AsyncAudio(self)
+            self.moderations = resources.AsyncModerations(self)
+            self.models = resources.AsyncModels(self)
+            self.fine_tuning = resources.AsyncFineTuning(self)
+            self.beta = resources.AsyncBeta(self)
+            self.batches = resources.AsyncBatches(self)
+            self.uploads = resources.AsyncUploads(self)
+
+    @property
+    def Stream(self):
+        return Stream
+    
+    @property
+    @override
+    def qs(self) -> Querystring:
+        return Querystring(array_format="brackets")
+
+    @property
+    @override
+    def auth_headers(self) -> dict[str, str]:
+        api_key = self.api_key
+        if api_key is None:
+            return {}
+        return {"Authorization": f"Bearer {api_key}"}
+
+    @property
+    @override
+    def default_headers(self) -> dict[str, str | Omit]:
+        return {
+            **super().default_headers,
+            "X-Stainless-Async": "false",
+            **self._custom_headers,
+        }
+
+    async def stream_to_generator(self, stream_obj: Stream) -> AsyncGenerator:
+        """Make a stream object to an async generator that fits the client stream decoder"""
+        for x in stream_obj:
+            yield f"data: {json.dumps(x)}\n\n"
+
+    async def _make_status_error(self, err_msg: str, *, body: object, response: httpx.Response) -> HAPIStatusError:
+        """
+        Make an APIStatusError from an error message, response body, and response object.
+        """
+        return HAPIStatusError(err_msg, body=body, response=response)
 
 
 
