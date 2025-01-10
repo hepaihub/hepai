@@ -10,7 +10,7 @@ push_to_github:
     - cd /tmp
     - git clone --bare https://code.ihep.ac.cn/zdzhang/hai.git
     - cd hai.git
-    - git push --mirror git@github.com:zhangzhengde0225/hai.git
+    - https_proxy=http://localhost:8118 git push --mirror https://github.com/zhangzhengde0225/hepai.git
     - cd ..
     - rm -rf hai.git
   only:
