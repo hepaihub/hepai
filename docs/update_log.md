@@ -1,5 +1,6 @@
 # 更新日志
 
++ 2025.01.23 v1.1.21 修复from hepai import Stream Bug
 + 2024.12.31 v1.1.20 更新HepAI Client，支持httpx>=0.28.1
 + 2024.12.26 v1.1.19 添加了verify_api_key方法，适配了DDF1 和 DDF2的api_key验证。
 + 2024.12.22 v1.1.15 更新HepAI remote model

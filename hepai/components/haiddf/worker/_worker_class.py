@@ -160,6 +160,7 @@ class CommonWorker:
                 name = name.strip()
                 assert user_or_group in ['owner', 'users', 'groups']
                 names = name.split(',')  if ',' in name else [name]
+                names = [n.strip() for n in names]
                 prems[user_or_group] = names
         else:
             raise ValueError(f"permissions should be str or dict, but got {type(permissions)}")
@@ -395,6 +396,7 @@ class CommonWorker:
                     
                 if isinstance(res, Generator):
                     return StreamingResponse(res, media_type="application/octet-stream")
+                    # return StreamingResponse(res, media_type="text/event-stream")
                 return res
             except Exception as e:
                 # 获取报错类型：e.__class__.__name__
