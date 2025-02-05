@@ -153,18 +153,16 @@ class CommonWorker:
             return permissions
         elif isinstance(permissions, str):
             """user: <user1>; user: <user2>; group: <group1>, ..."""
-            prems = dict()
+            perms = dict()
             for a in permissions.split(';'):
-                user_or_group, name = a.split(':')
-                user_or_group = user_or_group.strip()
-                name = name.strip()
-                assert user_or_group in ['owner', 'users', 'groups']
-                names = name.split(',')  if ',' in name else [name]
-                names = [n.strip() for n in names]
-                prems[user_or_group] = names
+                user_or_group, names = map(str.strip, a.split(':', 1))
+                assert user_or_group in ['owner', 'users', 'groups'], f"Invalid key: {user_or_group}"
+                perms[user_or_group] = (
+                    [name.strip() for name in names.split(',')] if ',' in names else [names.strip()]
+                )
         else:
             raise ValueError(f"permissions should be str or dict, but got {type(permissions)}")
-        return prems
+        return perms
     
     def _init_config_dict(self, config: HWorkerConfig, **kwargs):
         config_dict = config.__dict__

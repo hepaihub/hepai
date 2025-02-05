@@ -125,10 +125,156 @@ class Worker(SyncAPIResource):
             standalone: bool = False,
             )  -> WorkerInfo:
         
-        from ..._related_class import HWorkerAPP
+        from hepai import HWorkerAPP
         return HWorkerAPP.register_worker(model=model, daemon=daemon, standalone=standalone)
     
 
-
 class AsyncWorker(AsyncAPIResource):
-    pass
+    """
+    Asynchronous version of the Worker resource.
+    """
+
+    @property
+    def prefix(self) -> str:
+        return "/worker"
+
+    async def list_workers(self) -> HWorkerListPage:
+        """
+        List all workers asynchronously.
+        """
+        return await self._get(
+            f"{self.prefix}/list_workers",
+            cast_to=HWorkerListPage,
+        )
+
+    async def get_info(
+        self,
+        worker_id: str = None,
+        model_name: str = None,
+    ) -> WorkerInfo:
+        """
+        Get worker info by `worker_id` or `model_name` asynchronously.
+        Either worker_id or model_name should be provided.
+        """
+        assert worker_id or model_name, "Either worker_id or model_name should be provided."
+        payload = {
+            "worker_id": worker_id,
+            "model_name": model_name,
+        }
+        return await self._post(
+            f"{self.prefix}/get_worker_info",
+            cast_to=WorkerInfo,
+            body=payload,
+        )
+
+    async def get_status(
+        self,
+        worker_id: str,
+        refresh: bool = False,
+    ) -> WorkerStatusInfo:
+        """
+        Get worker status by `worker_id` asynchronously.
+        Set `refresh` to True to refresh the worker status.
+        """
+        payload = {
+            "worker_id": worker_id,
+            "refresh": refresh,
+        }
+        return await self._post(
+            f"{self.prefix}/get_worker_status",
+            cast_to=WorkerStatusInfo,
+            body=payload,
+        )
+
+    async def stop(
+        self,
+        worker_id: str,
+        permanent: bool = False,
+    ) -> WorkerStoppedInfo:
+        """
+        Stop a worker by `worker_id` asynchronously.
+        If `permanent` is True, stop the worker permanently.
+        """
+        payload = {
+            "worker_id": worker_id,
+            "permanent": permanent,
+        }
+        return await self._post(
+            f"{self.prefix}/stop_worker",
+            cast_to=WorkerStoppedInfo,
+            body=payload,
+        )
+
+    async def refresh_all(self) -> Dict[str, Any]:
+        """
+        Refresh all workers asynchronously.
+        """
+        return await self._get(
+            f"{self.prefix}/refresh_all_workers",
+            cast_to=Dict[str, Any],
+        )
+
+    async def get_remote_model(
+        self,
+        worker_id: str = None,
+        model_name: str = None,
+    ) -> HRemoteModel:
+        """
+        Get a remote model by `worker_id` or `model_name` asynchronously.
+        """
+        worker_info: WorkerInfo = await self.get_info(
+            worker_id=worker_id,
+            model_name=model_name,
+        )
+        if not isinstance(worker_info, WorkerInfo):
+            raise ValueError(f"Failed to get remote model: {worker_info}")
+        from ..._remote_model import LRemoteModel
+        return LRemoteModel(name=model_name, worker_info=worker_info, worker_resource=self)
+
+    async def request(
+        self,
+        target: dict,
+        args: list = None,
+        kwargs: dict = None,
+    ):
+        """
+        Request the target worker model and function asynchronously.
+        `target` is a dict, for example: {"model": "HRemoteModel", "function": "hello_world"}.
+        """
+        model = target.get("model")
+        function = target.get("function")
+        stream = kwargs.get("stream", False) if kwargs else False
+        payload = {}
+
+        if args:
+            payload["args"] = args
+        if kwargs:
+            payload["kwargs"] = kwargs
+
+        if stream:
+            return await self._post(
+                f"{self.prefix}/unified_gate/?model={model}&function={function}",
+                body=payload,
+                stream=True,
+                stream_cls=Stream[Any],
+                cast_to=Any,
+            )
+        return await self._post(
+            f"{self.prefix}/unified_gate/?model={model}&function={function}",
+            cast_to=Any,
+            body=payload,
+        )
+
+    async def register(
+        self,
+        model: HRemoteModel = None,
+        daemon: bool = False,
+        standalone: bool = False,
+    ) -> WorkerInfo:
+        """
+        Register a worker to the server asynchronously.
+        """
+        from hepai import HWorkerAPP
+        # If HWorkerAPP.register_worker is purely synchronous,
+        # we just call it directly. If there's an async method, use await accordingly.
+        return HWorkerAPP.register_worker(model=model, daemon=daemon, standalone=standalone)
