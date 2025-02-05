@@ -14,10 +14,10 @@ class LRemoteModel:
             self,
             name: str,
             worker_info: WorkerInfo,
-            worker_resource: resources.Worker
+            worker_resource: resources.AsyncWorker
             ) -> None:
         self.name = name
-        self.wr: resources.Worker = worker_resource
+        self.wr: resources.AsyncWorker = worker_resource
         if not isinstance(worker_info, WorkerInfo):
             raise ValueError(f"Failed to get remote model: {worker_info}")
 
