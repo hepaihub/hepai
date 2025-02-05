@@ -4,13 +4,13 @@
 
 import os, sys
 from pathlib import Path
-# here = Path(__file__).parent
+here = Path(__file__).parent
 
-# try:
-#     from hepai import __version__
-# except:
-#     sys.path.insert(1, f"{here.parent.parent}")
-#     from hepai import __version__
+try:
+    from hepai import __version__
+except:
+    sys.path.insert(1, f"{here.parent.parent}")
+    from hepai import __version__
 
 from hepai import HepAI
 from hepai.types import ChatCompletion, Stream, ChatCompletionChunk

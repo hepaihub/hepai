@@ -289,7 +289,8 @@ class AsyncHClient(AsyncAPIClient):
 
     @property
     def Stream(self):
-        return Stream
+        # return Stream
+        return AsyncStream
     
     @property
     @override
@@ -315,10 +316,10 @@ class AsyncHClient(AsyncAPIClient):
 
     async def stream_to_generator(self, stream_obj: Stream) -> AsyncGenerator:
         """Make a stream object to an async generator that fits the client stream decoder"""
-        for x in stream_obj:
+        async for x in stream_obj:
             yield f"data: {json.dumps(x)}\n\n"
 
-    async def _make_status_error(self, err_msg: str, *, body: object, response: httpx.Response) -> HAPIStatusError:
+    def _make_status_error(self, err_msg: str, *, body: object, response: httpx.Response) -> HAPIStatusError:
         """
         Make an APIStatusError from an error message, response body, and response object.
         """

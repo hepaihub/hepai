@@ -21,7 +21,7 @@ api_key=os.getenv("DDF_ZDZHANG_API_KEY")
 base_url = "https://aiapi001.ihep.ac.cn/apiv2"
 # client = HepAI(base_url=base_url, api_key=api_key)
 # client = AsyncOpenAI(base_url=base_url, api_key=api_key)
-client = AsyncHepAI(base_url=base_url, api_key=api_key)
+client = AsyncHepAI(base_url=base_url, api_key=api_key, proxy=None)
 
 q = "Sai hello"
 # q = "tell me a history of Particle Physics"
