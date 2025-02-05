@@ -9,6 +9,8 @@ from hai import HaiFile
 
 
 from .components.haiddf.hepai_client import HepAIClient as HepAI
+from .components.haiddf.hepai_client import AsyncHepAIClient as AsyncHepAI
+
 
 from .types import Stream, ChatCompletion, ChatCompletionChunk
 

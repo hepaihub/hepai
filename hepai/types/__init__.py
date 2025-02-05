@@ -24,6 +24,7 @@ from ..components.haiddf.hclient._return_class import (
 from ..components.haiddf.hclient._hclient import (
     HClient, HClientConfig,
     Stream, ChatCompletion, ChatCompletionChunk,
+    AsyncStream,
     )
 
 from ..components.haiddf.worker.worker_app import HWorkerAPP, HWorkerConfig

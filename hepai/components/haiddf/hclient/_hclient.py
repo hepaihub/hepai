@@ -274,7 +274,7 @@ class AsyncHClient(AsyncAPIClient):
         if self.config.enable_openai:
             """集成openai的resources"""
             from .openai_api import resources
-            self.completions = resources.AsyncCompletions()
+            self.completions = resources.AsyncCompletions(self)
             self.chat = resources.AsyncChat(self)
             self.embeddings = resources.AsyncEmbeddings(self)
             self.files = resources.AsyncFiles(self)

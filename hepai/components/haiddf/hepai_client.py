@@ -208,8 +208,10 @@ class AsyncHepAIClient(AsyncHClient):
         super().__init__(config, **overrides)
 
         self.worker = resources.AsyncWorker(self)
-        self.key = resources.AsyncKey(self)
-        self.user = resources.AsyncUser(self)
+
+        # TODO: AsyncUser and AsyncKey
+        # self.key = resources.AsyncKey(self)
+        # self.user = resources.AsyncUser(self)
 
     ## --- 关于Worker的函数 --- ## 
     async def list_workers(self):

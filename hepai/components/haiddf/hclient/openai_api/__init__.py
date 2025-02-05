@@ -19,13 +19,14 @@ from .adapted_openai._base_client import SyncAPIClient, AsyncAPIClient
 from .adapted_openai._constants import DEFAULT_MAX_RETRIES, DEFAULT_TIMEOUT
 from .adapted_openai._types import NOT_GIVEN, Omit
 from .adapted_openai._qs import Querystring
-from .adapted_openai._streaming import Stream
+from .adapted_openai._streaming import Stream, AsyncStream
 from .adapted_openai._exceptions import APIStatusError, OpenAIError
 from .adapted_openai import resources
 from .adapted_openai.types.chat import *
 
 
+
 __all__ = ["SyncAPIClient", "AsyncAPIClient", "DEFAULT_MAX_RETRIES", "DEFAULT_TIMEOUT", 
-           "NOT_GIVEN", "Omit", "Querystring", "Stream", "APIStatusError", "OpenAIError",
+           "NOT_GIVEN", "Omit", "Querystring", "Stream", "AsyncStream", "APIStatusError", "OpenAIError",
            "resources", "ChatCompletion", "ChatCompletionChunk",
            ]
