@@ -70,7 +70,7 @@ class BaseWorkerModel:
         uvicorn.run(app, host=app.host, port=app.port)
 
     @classmethod
-    async def connect(
+    def connect(
         cls,
         name: str,  # 远程模型的名称
         base_url: str,  # 远程模型的地址
@@ -83,8 +83,8 @@ class BaseWorkerModel:
         # 将 httpx 的日志记录级别调整为 WARNING
         logging.getLogger("httpx").setLevel(logging.WARNING)
         
-        from hepai import AsyncHepAI
-        client = AsyncHepAI(
+        from hepai import HepAI
+        client = HepAI(
             base_url=base_url,
             # api_key=api_key,
             **kwargs,
@@ -92,7 +92,7 @@ class BaseWorkerModel:
 
         from ..hclient._remote_model import LRModel
 
-        model: LRModel = await client.get_remote_model(model_name=name)
+        model: LRModel = client.get_remote_model(model_name=name)
         return model
     
     @classmethod
