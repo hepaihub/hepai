@@ -7,6 +7,7 @@ from dataclasses import dataclass, field, asdict
 from typing import List, Dict, Literal, Union, Optional, Any
 import json
 import inspect
+import asyncio
 
 @dataclass
 class permission:
@@ -83,16 +84,18 @@ class BaseWorkerModel:
         # 将 httpx 的日志记录级别调整为 WARNING
         logging.getLogger("httpx").setLevel(logging.WARNING)
         
-        from hepai import HepAI
-        client = HepAI(
+        from hepai import AsyncHepAI
+        client = AsyncHepAI(
             base_url=base_url,
             # api_key=api_key,
             **kwargs,
             )
 
         from ..hclient._remote_model import LRModel
-        
-        model: LRModel = client.get_remote_model(model_name=name)
+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        model: LRModel = loop.run_until_complete(client.get_remote_model(model_name=name))
         return model
     
     @classmethod
