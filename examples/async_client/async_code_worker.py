@@ -146,8 +146,8 @@ messages = [{"role":"user", "content":query_text}]
 worker_config={"job_timeout": 30}
 
 async def main():
-    model = await HRModel.connect(
-        name="xuliang/code-worker-v2",
+    model = await HRModel.async_connect(
+        name="hepai/code-worker-v2-aiboss",
         # base_url="http://localhost:44001/apiv2"
         # base_url="http://localhost:42899/apiv2",
         api_key=os.environ.get('HEPAI_API_KEY2'),

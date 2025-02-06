@@ -115,6 +115,31 @@ class BaseWorkerModel:
         models = client.models.list()
         return models
 
+    @classmethod
+    async def async_connect(
+            cls,
+            name: str,  # 远程模型的名称
+            base_url: str,  # 远程模型的地址
+            # api_key: str = None,  # 远程模型的API Key
+            **kwargs,
+    ):
+
+        import logging
+        import httpx
+        # 将 httpx 的日志记录级别调整为 WARNING
+        logging.getLogger("httpx").setLevel(logging.WARNING)
+
+        from hepai import AsyncHepAI
+        client = AsyncHepAI(
+            base_url=base_url,
+            # api_key=api_key,
+            **kwargs,
+        )
+
+        from ..hclient._remote_model import LRModel
+
+        model: LRModel = await client.get_remote_model(model_name=name)
+        return model
 
 DEFAULT_STREAM_DATA = [
     1, 2, 3,
