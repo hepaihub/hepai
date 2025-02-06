@@ -7,7 +7,6 @@ from dataclasses import dataclass, field, asdict
 from typing import List, Dict, Literal, Union, Optional, Any
 import json
 import inspect
-import asyncio
 
 @dataclass
 class permission:
@@ -71,7 +70,7 @@ class BaseWorkerModel:
         uvicorn.run(app, host=app.host, port=app.port)
 
     @classmethod
-    def connect(
+    async def connect(
         cls,
         name: str,  # 远程模型的名称
         base_url: str,  # 远程模型的地址
@@ -93,9 +92,7 @@ class BaseWorkerModel:
 
         from ..hclient._remote_model import LRModel
 
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        model: LRModel = loop.run_until_complete(client.get_remote_model(model_name=name))
+        model: LRModel = await client.get_remote_model(model_name=name)
         return model
     
     @classmethod

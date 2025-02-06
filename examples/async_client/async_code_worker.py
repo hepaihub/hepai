@@ -1,25 +1,16 @@
-import os
+import os, logging
+import asyncio
+from hepai import HRModel, ChatCompletionChunk
+
+logger = logging.getLogger()
+logging.basicConfig(level="DEBUG")
+logging.getLogger().setLevel("DEBUG")
 
 # 1. 在本机或者远程服务器配置代码执行器
 # 下载链接见DrSai/modules/components/actuators/code_woker_v2.md
 # 运行方式见https://code.ihep.ac.cn/xuliang/drsai-code-worker-v2
 
-# 2.连接到代码执行器并测试
-from hepai import HRModel, ChatCompletionChunk
-# hepai_client = HepAI(api_key=os.environ.get('HEPAI_API_KEY2'), base_url="https://aiapi001.ihep.ac.cn/apiv2")
-# models = hepai_client.models.list()
-# print(models)
-model = HRModel.connect(
-    name="hepai/code-worker-v2-aiboss",
-    # base_url="http://localhost:44001/apiv2"
-    #base_url="http://localhost:42899/apiv2",
-    api_key=os.environ.get('HEPAI_API_KEY2'),
-    base_url="https://aiapi001.ihep.ac.cn/apiv2"
-)
-#funcs = model.functions()  # Get all remote callable functions.
-#print(f"Remote callable funcs: {funcs}")
-
-# 3.配置访问代码执行器的必要参数
+# 2.配置访问代码执行器的必要参数
 api_key = os.environ.get('HEPAI_API_KEY')
 config_list = [
     {
@@ -56,7 +47,7 @@ llm_config = {
 }
 
 
-# 4.发送代码消息测试代码执行器
+# 3.发送代码消息测试代码执行器
 query_text="""
 Here’s an example of a simple CMake project that uses CERN ROOT to draw a histogram.
 
@@ -154,12 +145,16 @@ Worker, please run the code.
 messages = [{"role":"user", "content":query_text}]
 worker_config={"job_timeout": 30}
 
-# output = model.interface(messages = messages, worker_config=worker_config, stream=True)
-# for item in output:
-#     print(item, end='')
-import asyncio
 async def main():
-    rst = await  model.interface(messages = messages, worker_config=worker_config, stream=True)
+    model = await HRModel.connect(
+        name="xuliang/code-worker-v2",
+        # base_url="http://localhost:44001/apiv2"
+        # base_url="http://localhost:42899/apiv2",
+        api_key=os.environ.get('HEPAI_API_KEY2'),
+        base_url="https://aiapi001.ihep.ac.cn/apiv2"
+    )
+
+    rst = await model.interface(messages = messages, worker_config=worker_config, stream=True)
 
     async for chunk in rst:
         chunk: ChatCompletionChunk = chunk
