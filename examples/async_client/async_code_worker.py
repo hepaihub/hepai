@@ -1,5 +1,4 @@
 import os
-import asyncio
 
 # 1. 在本机或者远程服务器配置代码执行器
 # 下载链接见DrSai/modules/components/actuators/code_woker_v2.md
@@ -11,7 +10,7 @@ from hepai import HRModel, ChatCompletionChunk
 # models = hepai_client.models.list()
 # print(models)
 model = HRModel.connect(
-    name="xuliang/code-worker-v2",
+    name="hepai/code-worker-v2-aiboss",
     # base_url="http://localhost:44001/apiv2"
     #base_url="http://localhost:42899/apiv2",
     api_key=os.environ.get('HEPAI_API_KEY2'),
@@ -158,6 +157,7 @@ worker_config={"job_timeout": 30}
 # output = model.interface(messages = messages, worker_config=worker_config, stream=True)
 # for item in output:
 #     print(item, end='')
+import asyncio
 async def main():
     rst = await  model.interface(messages = messages, worker_config=worker_config, stream=True)
 
