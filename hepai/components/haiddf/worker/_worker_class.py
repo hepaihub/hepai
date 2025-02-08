@@ -1,6 +1,6 @@
 import os, sys, signal
 from dataclasses import dataclass, field, asdict
-from typing import Dict, List, Optional, Union, Generator, Callable, Literal
+from typing import Dict, List, Optional, Union, Generator, Callable, Literal, AsyncGenerator
 import threading
 import atexit
 import warnings
@@ -396,6 +396,102 @@ class CommonWorker:
                     return StreamingResponse(res, media_type="application/octet-stream")
                     # return StreamingResponse(res, media_type="text/event-stream")
                 return res
+            except Exception as e:
+                # 获取报错类型：e.__class__.__name__
+                tb_str = traceback.format_exception(*sys.exc_info())
+                tb_str = "".join(tb_str)
+                # logger.debug(f"Error: {e}.\nTraceback: {tb_str}")
+                e_class = e.__class__.__name__
+                error_msg = e.__dict__.get("body", None)
+                error_msg = error_msg if error_msg else f"{e_class}: {str(e)}"
+                if e_class == "ModuleNotFoundError":
+                    raise HTTPException(status_code=404, detail=error_msg)
+                elif e_class == "NotImplementedError":
+                    raise HTTPException(status_code=501, detail=error_msg)
+                elif e_class == "BadRequestError":
+                    raise HTTPException(status_code=400, detail=error_msg)
+                elif e_class == "TypeError":
+                    raise HTTPException(status_code=500, detail=error_msg)
+                elif e_class == "APITimeoutError":
+                    raise HTTPException(status_code=504, detail=error_msg)
+                ## TODO: 其他报错类型转换为合适的报错状态码
+                error_msg2 = f"{e_class}: {str(e)}"
+                print(f"一种新的错误类型：{e_class}, 错误信息：{error_msg}\n{error_msg2}")
+                raise HTTPException(status_code=400, detail=f'{error_msg2}\n{error_msg2}')
+        else:
+            raise HTTPException(status_code=404, detail=f"Function `{function}` does not exist or is not callable in the worker `{self.worker_id}`")
+        
+    async def unified_gate_async(
+            self, 
+            model: str,
+            function: str,
+            args: List = None,
+            kwargs: Dict = None,
+            ):
+        """
+        统一入口, 
+        v2.0更新为符合FastAPI规范，易于检测错误
+        v2.1支持多模型
+        """
+        # assert "function" in kwargs, "function is required"
+        # function = kwargs.pop("function")
+
+        if model is None:
+            if len(self.models) == 1:
+                # 不指定模型，且worker只搭载一个模型时，直接使用这个模型
+                req_model: HRemoteModel = self.models[0]  # requested model
+            else:
+                raise HTTPException(status_code=400, detail=f"Model is required, but got None, and there are {len(self.models)} models in the worker `{self.worker_id}`")  
+        else:
+            req_models: List[HRemoteModel] = [m for m in self.models if m.name == model]
+            if len(req_models) == 0:  # 无此模型
+                raise HTTPException(status_code=404, detail=f"Model `{model}` does not exist in the worker `{self.worker_id}`")
+            elif len(req_models) > 1:  # 有多个同名模型
+                raise HTTPException(status_code=400, detail=f"Model `{model}` is not unique in the worker `{self.worker_id}`")
+            else:  # 有且只有一个被匹配到的模型
+                req_model = req_models[0]
+                
+        has_function = hasattr(req_model, function)
+        if not has_function:
+            raise HTTPException(status_code=404, detail=f"Function `{function}` does not exist in the worker `{self.worker_id}`")
+        is_callable = callable(getattr(req_model, function))
+        is_remote_callable = hasattr(getattr(req_model, function), "is_remote_callable")
+        if not is_callable:
+            raise HTTPException(status_code=405, detail=f"Function `{function}` is not callable in the worker `{self.worker_id}`")
+        if not is_remote_callable:
+            raise HTTPException(status_code=405, detail=f"Function `{function}` is not remote callable in the worker `{self.worker_id}`, please add `@remote_callable` decorator to the function in worker model.")
+        if has_function and is_callable and is_remote_callable:
+            func: Callable = getattr(req_model, function)
+            # 判断是否为异步函数
+            is_async = asyncio.iscoroutinefunction(func)
+            try:
+                if is_async:
+                    # res =  func(**kwargs)
+                    try:
+                        res = await func(*args, **kwargs)
+                    except:
+                        # 有时候因为中间层额外引入了stream参数，而一些函数不允许接收stream参数。
+                        stream = kwargs.pop("stream", False)  # 为了在客户端传输stream时，不会被kwargs接收，所以pop出来
+                        res = await func(*args, **kwargs)
+                    # 判断是否是异步流式响应
+                    if isinstance(res, AsyncGenerator):
+                        #返回异步流式响应
+                        return StreamingResponse(res, media_type="application/octet-stream")
+                        # return StreamingResponse(res, media_type="text/event-stream") 
+                    return res  
+                else:
+                    # res =  func(**kwargs)
+                    try:
+                        res = func(*args, **kwargs)
+                    except:
+                        # 有时候因为中间层额外引入了stream参数，而一些函数不允许接收stream参数。
+                        stream = kwargs.pop("stream", False)  # 为了在客户端传输stream时，不会被kwargs接收，所以pop出来
+                        res = func(*args, **kwargs)
+                        
+                    if isinstance(res, Generator):
+                        return StreamingResponse(res, media_type="application/octet-stream")
+                        # return StreamingResponse(res, media_type="text/event-stream")
+                    return res
             except Exception as e:
                 # 获取报错类型：e.__class__.__name__
                 tb_str = traceback.format_exception(*sys.exc_info())

@@ -174,7 +174,7 @@ class HWorkerAPP(FastAPI):
                 self.limit_model_concurrency)
         await model_semaphore.acquire()
         try:
-            rst = self.worker.unified_gate(
+            rst = await self.worker.unified_gate_async(
                 model=model,
                 function=function, 
                 args=function_params.args,
