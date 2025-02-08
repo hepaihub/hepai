@@ -36,7 +36,7 @@ class HepAIClient(HClient):
         config = config or HClientConfig()
         super().__init__(config, **overrides)
 
-        self.worker = resources.AsyncWorker(self)
+        self.worker = resources.Worker(self)
         self.key = resources.Key(self)
         self.user = resources.User(self)
 
