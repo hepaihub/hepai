@@ -1,5 +1,6 @@
 # 更新日志
 
++ 2025.02.10 v1.1.24 升级同步和异步的worker，在test中增加了同步和异步的demo
 + 2025.02.06 v1.1.22 更新HepAI Client，支持异步客户端AsyncClient
 + 2025.01.23 v1.1.21 修复from hepai import Stream Bug
 + 2024.12.31 v1.1.20 更新HepAI Client，支持httpx>=0.28.1
