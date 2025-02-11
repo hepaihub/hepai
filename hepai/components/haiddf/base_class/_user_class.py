@@ -154,6 +154,7 @@ class APIKeyInfo:
     updated_by: Optional[str] = field(default=None, metadata={'description': 'Identifier for who last updated the API key record.'})
     allowed_models: Optional[Union[str, Dict]] = field(default="all", metadata={'description': 'Allowed models for the API key.'})
     remarks: Optional[str] = field(default=None, metadata={'description': 'Additional remarks or notes about the API key.'})
+    app_group: Optional[str] = field(default=None, metadata={'description': 'App group that the API key belongs to.'})
     del_flag: bool = field(default=False, metadata={'description': 'Flag indicating if the API key is deleted.'})
     
 
