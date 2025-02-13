@@ -55,7 +55,8 @@ class StressTester:
             completion = self.client.chat.completions.create(
                 model=self.model,
                 messages=[{"role": "user", "content": request_data}],
-                stream=True
+                stream=True,
+                temperature=1E-6,
             )
             for chunk in completion:
                 if chunk.choices[0].delta.content:
@@ -98,7 +99,7 @@ class StressTester:
         finally:
             end_time = time.perf_counter()
             duration = end_time - start_time
-            time_to_first_token = first_token_time - start_time if first_token_time else duration
+            time_to_first_token = first_token_time - start_time if first_token_time else None
             generation_duration = end_time - first_token_time if first_token_time else 0
             tokens_per_sec = token_count / generation_duration if generation_duration > 0 else 0
 
@@ -187,8 +188,9 @@ class StressTester:
 async def main():
     parser = ArgumentParser()
     parser.add_argument('--concurrency', type=int, default=10, help='并发用户数')
-    parser.add_argument('--requests', type=int, default=100, help='总请求数')
-    parser.add_argument('--model', type=str, default='openai/gpt-4o-mini', help='模型名称')
+    parser.add_argument('--requests', type=int, default=10, help='总请求数')
+    # parser.add_argument('--model', type=str, default='openai/gpt-4o-mini', help='模型名称')
+    parser.add_argument('--model', type=str, default='deepseek-ai/DeepSeek-R1-Distill-Qwen-32B-with-reasoning', help='模型名称')
     parser.add_argument('--interval', type=float, default=0, help='请求间隔（秒）')
     parser.add_argument('--random-interval', action='store_true', help='启用随机间隔')
     parser.add_argument('--async', dest='use_async', action='store_true', help='使用异步模式')
@@ -196,17 +198,25 @@ async def main():
 
     tester = StressTester(
         base_url="https://aiapi001.ihep.ac.cn/apiv2",
-        api_key=os.environ.get('HEPAI_API_KEY2'),
+        # base_url="http://localhost:42601/apiv2",
+        # base_url="http://aiapi.ihep.ac.cn/v1",
+        # api_key=os.environ.get('HEPAI_API_KEY2'),
+        api_key=os.getenv("DDF_ZDZHANG_API_KEY"),
+        # api_key=os.getenv("HEPAI_API_KEY"),
         model=args.model,
         interval=args.interval,
         random_interval=args.random_interval,
         use_async=args.use_async
     )
 
+    question = "hi"
+    question = "Explain the theory of relativity"
+
+
     await tester.run_test(
         concurrency=args.concurrency,
         total_requests=args.requests,
-        request_data="Explain the theory of relativity"
+        request_data=question,
     )
 
 if __name__ == "__main__":
