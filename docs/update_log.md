@@ -1,5 +1,6 @@
 # 更新日志
 
++ 2025.02.14 v1.1.26 client支持`fetch_api_key`方法。
 + 2025.02.11 v1.1.25 更新基础APIKeyInfo类，增加了`app_group`字段
 + 2025.02.10 v1.1.24 升级同步和异步的worker，在test中增加了同步和异步的demo
 + 2025.02.06 v1.1.22 更新HepAI Client，支持异步客户端AsyncClient
