@@ -187,6 +187,11 @@ class HepAIClient(HClient):
     def verify_api_key(self, api_key: str, version: str = "v2"):
         return self.key.get_info(api_key=api_key, version = version)
     
+    def fetch_api_key(self, username: str):
+        """
+        Fetch API Key by username
+        """
+        return self.key.fetch_api_key(username=username)
 
 class AsyncHepAIClient(AsyncHClient):
     """

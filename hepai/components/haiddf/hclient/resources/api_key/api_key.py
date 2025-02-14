@@ -67,3 +67,14 @@ class Key(SyncAPIResource):
             body=payload,
             cast_to=Dict,
         )
+    
+    def fetch_api_key(self, username: str):
+        payload = {
+            "username": username,
+        }
+        return self._post(
+            f"{self.prefix}/fetch_api_key",
+            body=payload,
+            cast_to=APIKeyInfo,
+        )
+        
