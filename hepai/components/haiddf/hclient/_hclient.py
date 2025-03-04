@@ -59,7 +59,8 @@ def get_defualt_timeout(timeout: float = 600.0, connect: float = 5.0) -> httpx.T
 
 @dataclass
 class HClientConfig:
-    base_url: str = field(default=NOT_GIVEN, metadata={"description": "The default base URL for all requests"})
+    # base_url: str = field(default=NOT_GIVEN, metadata={"description": "The default base URL for all requests"})
+    base_url: str = field(default="https://aiapi.ihep.ac.cn/apiv2", metadata={"description": "The default base URL for all requests"})
     api_key: str = field(default=NOT_GIVEN, metadata={"description": "The default API key for all requests"})
     max_retries: int = field(default=0, metadata={"description": "The default maximum number of retries for all requests"})
     timeout: None | httpx.Timeout = field(default_factory=get_defualt_timeout, metadata={"description": "The default timeout for all requests"})
