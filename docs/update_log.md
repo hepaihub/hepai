@@ -1,5 +1,6 @@
 # 更新日志
 
++ 2025.03.17 v1.1.30 HWorkerAPP现在可传入Fastapi的参数了。
 + 2025.02.22 v1.1.29 适配openai v1.60.0
 + 2025.02.18 v1.1.27 支持deepseek worker
 + 2025.02.14 v1.1.26 client支持`fetch_api_key`方法。

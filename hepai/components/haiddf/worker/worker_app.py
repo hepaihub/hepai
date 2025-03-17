@@ -15,6 +15,7 @@ import threading
 from pydantic import BaseModel
 from logging import Logger
 import httpx
+import inspect
 # import markdown
 
 from ._worker_class import HWorkerConfig, HRemoteModel, CommonWorker, ModelResourceInfo
@@ -25,6 +26,22 @@ class FunctionParamsItem(BaseModel):
     args: List = []
     kwargs: Dict = {}
 
+
+def get_fastapi_init_params():
+    # 获取 FastAPI 的 __init__ 方法签名
+    init_signature = inspect.signature(FastAPI.__init__)
+    # 提取参数名（排除 'self' 和可变参数）
+    params = []
+    for name, param in init_signature.parameters.items():
+        if name == "self":
+            continue
+        if param.kind in (
+            inspect.Parameter.VAR_POSITIONAL,  # *args
+            inspect.Parameter.VAR_KEYWORD       # **kwargs
+        ):
+            continue
+        params.append(name)
+    return params
 
 class HWorkerAPP(FastAPI):
     """
@@ -37,8 +54,20 @@ class HWorkerAPP(FastAPI):
             models: HRemoteModel | List[HRemoteModel], 
             worker_config: HWorkerConfig = None,  # Alias of config
             logger: Logger = None,
-            **worker_overrides):
-        super().__init__()
+            **worker_overrides,
+            ):
+        # 获取父类的所有可能参数并传递给父类
+        # 获取 FastAPI 接受的参数名
+        fastapi_params = get_fastapi_init_params()
+        # 筛选出有效参数
+        fastapi_kwargs = {
+            k: v for k, v in worker_overrides.items()
+            if k in fastapi_params
+        }
+        # 从 worker_overrides 中删除 FastAPI 的参数
+        for k in fastapi_kwargs.keys():
+            worker_overrides.pop(k)
+        super().__init__(**fastapi_kwargs)
         worker_config = worker_config if worker_config is not None else HWorkerConfig()
         assert isinstance(worker_config, HWorkerConfig), f"worker_config should be an instance of HWorkerConfig"
         worker_config.update_from_dict(worker_overrides)
