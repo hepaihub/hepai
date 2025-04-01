@@ -1,5 +1,6 @@
 # 更新日志
 
++ 2025.04.01 v1.1.31 fix bug，自动安装pydantic版本2.10，如果高于2.11会报错
 + 2025.03.17 v1.1.30 HWorkerAPP现在可传入Fastapi的参数了。
 + 2025.02.22 v1.1.29 适配openai v1.60.0
 + 2025.02.18 v1.1.27 支持deepseek worker
