@@ -331,7 +331,7 @@ class AsyncHClient(AsyncAPIClient):
 if __name__ == "__main__":
     client = HClient(base_url="http://localhost:42600/apiv2")    
     
-    from openai_api import Stream
+    from hepai.components.haiddf.hclient.openai_api import Stream
     from typing import Any
     data_need_stream = [
             1, 2, 3,

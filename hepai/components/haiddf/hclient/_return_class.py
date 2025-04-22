@@ -20,6 +20,9 @@ class HListPage:
     first_id: str = None
     last_id: str = None
     has_more: bool = False
+    offset: int = field(default=None, metadata={'description': 'Offset for pagination'})
+    total: int = field(default=None, metadata={'description': 'Total number of items'})
+    page_number: int = field(default=None, metadata={'description': 'Page number'})
 
     def __len__(self):
         return len(self.data)
@@ -103,7 +106,7 @@ class HWorkerListPage(HListPage):
 class HUserListPage(HListPage):
     """用户Client从服务器端获取到List类的消息后解析该对象"""
     data: List[UserInfo] = field(default_factory=List[UserInfo], metadata={'description': 'List of data'})
-
+ 
     def __post_init__(self):
         # 解析用户数据
         self.data = self.parse_user_info(self.data)

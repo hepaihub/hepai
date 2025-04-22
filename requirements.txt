@@ -20,7 +20,8 @@ fastapi  # for hai worker
 uvicorn  # for hai worker
 
 openai>=1.63.0
-pydantic==2.10.0  # <2.11
+# pydantic==2.10.0  # <2.11
+pydantic==2.11.3
 
 python-dateutil  # for relativedelta
 

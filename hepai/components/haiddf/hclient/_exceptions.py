@@ -1,6 +1,9 @@
 
 import httpx
-from .openai_api.adapted_openai._exceptions import APIStatusError
+# from .openai_api.adapted_openai._exceptions import APIStatusError
+from .openai_api import APIStatusError
+
+
 
 
 class HAPIStatusError(APIStatusError):
