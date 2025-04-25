@@ -1,5 +1,6 @@
 # 更新日志
 
++ 2025.04.25 v1.1.33 支持agents，from hepai.agents import AssistantAgent
 + 2025.04.22 v1.1.32 更新HepAI Client，支持openai 1.75.0，不再使用本地openai文件，支持pydantic>=2.11
 + 2025.04.01 v1.1.31 fix bug，自动安装pydantic版本2.10，如果高于2.11会报错
 + 2025.03.17 v1.1.30 HWorkerAPP现在可传入Fastapi的参数了。
