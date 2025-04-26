@@ -29,6 +29,6 @@ httpx>=0.28.1
 
 markdown
 
-drsai
+drsai>=0.5.4a
 
 
