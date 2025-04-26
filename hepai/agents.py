@@ -17,7 +17,15 @@ from drsai.modules.managers.base_thread_message import ThreadMessage, Content, T
 
 
 # utils
-from drsai.utils import *
+from drsai.utils.message_convert import (
+    llm_messages2oai_messages, 
+    llm_messages2basechatmessages)
+
+from drsai.utils.oai_stream_event import (
+    chatcompletionchunk, 
+    chatcompletionchunkend, 
+    chatcompletions)
+
 
 # backend
 from drsai.backend.run import (
