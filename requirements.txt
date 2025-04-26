@@ -21,7 +21,7 @@ uvicorn  # for hai worker
 
 openai>=1.63.0
 # pydantic==2.10.0  # <2.11
-pydantic==2.11.3
+pydantic>=2.11.3
 
 python-dateutil  # for relativedelta
 
@@ -29,6 +29,16 @@ httpx>=0.28.1
 
 markdown
 
-drsai>=0.5.4a
-
+# for drsai agents
+autogen-agentchat>=0.5.5
+autogen-core>=0.5.5
+autogen-ext>=0.5.5
+schedule>=1.2.2
+tiktoken>=0.9.0
+passlib>=1.7.4
+jwt>=1.3.1
+aiohttp>=3.11.11
+mcp==1.4.1 # TODO: for autogen-agentchat
+python-multipart>=0.0.18
+json_schema_to_pydantic>=0.2.4
 

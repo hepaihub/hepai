@@ -1,34 +1,33 @@
-from drsai.dr_sai import DrSai
+from hepai.agents.dr_sai import DrSai
 
 # Agent components
-from drsai.modules.components.LLMClient import HepAIChatCompletionClient
+from hepai.agents.modules.components.LLMClient import HepAIChatCompletionClient
 
 # Agents
-from drsai.modules.baseagent.drsaiagent import DrSaiAgent as AssistantAgent
+from hepai.agents.modules.baseagent.drsaiagent import DrSaiAgent as AssistantAgent
 
 # Groupchat
-from drsai.modules.groupchat._round_robin_group_chat import DrSaiRoundRobinGroupChat, DrSaiRoundRobinGroupChatManager
-from drsai.modules.groupchat._base_group_chat import DrSaiGroupChatManager, DrSaiGroupChat
+from hepai.agents.modules.groupchat._round_robin_group_chat import DrSaiRoundRobinGroupChat, DrSaiRoundRobinGroupChatManager
+from hepai.agents.modules.groupchat._base_group_chat import DrSaiGroupChatManager, DrSaiGroupChat
 
 # manager
-from drsai.modules.managers.base_thread import Thread
-from drsai.modules.managers.threads_manager import ThreadsManager
-from drsai.modules.managers.base_thread_message import ThreadMessage, Content, Text
+from hepai.agents.modules.managers.base_thread import Thread
+from hepai.agents.modules.managers.threads_manager import ThreadsManager
+from hepai.agents.modules.managers.base_thread_message import ThreadMessage, Content, Text
 
 
 # utils
-from drsai.utils.message_convert import (
+from hepai.agents.utils.message_convert import (
     llm_messages2oai_messages, 
     llm_messages2basechatmessages)
 
-from drsai.utils.oai_stream_event import (
+from hepai.agents.utils.oai_stream_event import (
     chatcompletionchunk, 
     chatcompletionchunkend, 
     chatcompletions)
 
-
 # backend
-from drsai.backend.run import (
+from hepai.agents.backend.run import (
     Run_DrSaiAPP, 
     run_backend, 
     run_console, 
@@ -36,7 +35,7 @@ from drsai.backend.run import (
     run_openwebui,
     run_pipelines,
     run_drsai_app)
-from drsai.backend.app_worker import DrSaiAPP
+from hepai.agents.backend.app_worker import DrSaiAPP
 
 # autogen_ext Models
 from autogen_ext.models.openai import OpenAIChatCompletionClient

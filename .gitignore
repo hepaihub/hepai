@@ -153,3 +153,12 @@ dmypy.json
 
 # 明确不忽略adapted_openai下的lib
 !hepai/components/haiddf/hclient/openai_api/adapted_openai/lib
+
+
+
+# 忽略pipeline和openwebui的执行文件
+.webui_secret_key
+hepai/agents/backend/owebui_pipeline/pipelines/pipelines/drsai_pipeline/*.json
+hepai/agents/backend/owebui_pipeline/pipelines/pipelines/failed/
+hepai/agents/backend/owebui_pipeline/pipelines/pipelines/__init__/
+
