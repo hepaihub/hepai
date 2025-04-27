@@ -8,6 +8,7 @@ push_to_github:
   script:
     - whoami
     - cd /tmp
+    - rm -rf hepai.git
     - git clone --bare https://code.ihep.ac.cn/hepai/hepai.git
     - cd hepai.git
     - https_proxy=http://localhost:8118 git push --mirror https://github.com/hepaihub/hepai.git
