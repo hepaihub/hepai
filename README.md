@@ -19,6 +19,7 @@ HepAI框架集成了高能物理领域的经典和最先进（SOTA）的人工�
 <details open>
 <summary><b>News</b></summary>
 
++ [2025.04.27] v1.1.34 支持原opendrsai智能体与多智能体协作框架，将from drsai 改为 from hepai.agents即可，具体见 https://code.ihep.ac.cn/hepai/drsai
 + [2024.12.22] v1.1.16 支持远程模型！[点此查看详情](https://aiapi001.ihep.ac.cn/mkdocs/workers/)
 + [2024.05.16] v1.1.9 HepAI Client支持GPT-4o系列模型。
 + [2024.03.26] v1.0.21 Make LLM request like OpenAI via HepAI object.

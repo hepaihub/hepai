@@ -34,6 +34,7 @@ class DrSaiRoundRobinGroupChatManager(DrSaiGroupChatManager):
         termination_condition: TerminationCondition | None,
         max_turns: int | None,
         message_factory: MessageFactory,
+        emit_team_events: bool,
         thread: Thread = None,
         thread_mgr: ThreadsManager = None,
         **kwargs: Any
@@ -50,6 +51,7 @@ class DrSaiRoundRobinGroupChatManager(DrSaiGroupChatManager):
             termination_condition=termination_condition,
             max_turns=max_turns,
             message_factory=message_factory,
+            emit_team_events=emit_team_events,
             thread=thread,
             thread_mgr=thread_mgr,
             **kwargs
@@ -170,6 +172,7 @@ class DrSaiRoundRobinGroupChat(DrSaiGroupChat):
         max_turns: int | None = None,
         runtime: AgentRuntime | None = None,
         custom_message_types: List[type[BaseAgentEvent | BaseChatMessage]] | None = None,
+        emit_team_events: bool = False,
         thread: Thread = None,
         thread_mgr: ThreadsManager = None,
         **kwargs: Any
@@ -182,6 +185,7 @@ class DrSaiRoundRobinGroupChat(DrSaiGroupChat):
             max_turns=max_turns,
             runtime=runtime,
             custom_message_types=custom_message_types,
+            emit_team_events=emit_team_events,
             thread=thread,
             thread_mgr=thread_mgr,
             **kwargs
@@ -226,6 +230,7 @@ class DrSaiRoundRobinGroupChat(DrSaiGroupChat):
             participants=participants,
             termination_condition=termination_condition,
             max_turns=self._max_turns,
+            emit_team_events=self._emit_team_events,
         )
 
     @classmethod
@@ -234,4 +239,9 @@ class DrSaiRoundRobinGroupChat(DrSaiGroupChat):
         termination_condition = (
             TerminationCondition.load_component(config.termination_condition) if config.termination_condition else None
         )
-        return cls(participants, termination_condition=termination_condition, max_turns=config.max_turns)
+        return cls(
+            participants,
+            termination_condition=termination_condition,
+            max_turns=config.max_turns,
+            emit_team_events=config.emit_team_events,
+        )
