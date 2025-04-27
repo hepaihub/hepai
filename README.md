@@ -10,7 +10,7 @@ https://github.com/zhangzhengde0225/CDNet/archive/refs/heads/master.zip) -->
 #### 简体中文 | [English](https://github.com/zhangzhengde0225/hai/blob/main/docs/readme_en.md)
 
 # 高能AI框架HepAI
-HepAI是一个AI开源框架，是高能AI平台的核心技术，应用此技术可以加速多学科场景的科学研究，简化模型迭代和流程，是开发AI算法和应用的共性基础。
+HepAI提供了一个AI开源框架，是高能AI平台的核心技术，应用此技术可以加速多学科场景的科学研究，简化模型迭代和流程，是开发AI算法和应用的共性基础。
 
 HepAI平台本身是一个软件系统，承载AI算法模型，提供AI计算能力，打通数据通道，并开展AI培训。
 
