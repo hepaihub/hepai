@@ -15,9 +15,9 @@ from setuptools import find_packages, setup, Command
 
 NAME = 'hepai'
 DESCRIPTION = 'High energy phscis Artificial Intelligence plateform, HAI.'
-URL = 'https://github.com/zhangzhengde0225/hai'
-EMAIL = 'zdzhang@ihep.ac.cn'
-AUTHOR = 'Zhengde Zhang'
+URL = 'https://code.ihep.ac.cn/hepai/hepai'
+EMAIL = 'zdzhang@ihep.ac.cn; xiongdb@ihep.ac.cn'
+AUTHOR = 'Zhengde Zhang, Dongbo Xiong'
 REQUIRES_PYTHON = '>=3.10.0'
 
 with open(f'hai/version.py') as f:
