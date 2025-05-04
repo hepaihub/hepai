@@ -31,3 +31,7 @@
 - 1.发现```drsai/backend/owebui_pipeline/pipelines/main.py```中的加载pipeline函数：load_module_from_path，在windos 11系统gbk编码下使用```with open(module_path, 'r') as file:```读取pipeline python文件时出现编码错误，改成了：```with open(module_path, 'r', encoding='utf-8') as file:```。
 
 - 2.将``opendrsai``分为```main```和```stable```两个版本，在```main```开发测试完成后会发布稳定版到```stable```分支，所有的pipy安装包都将以```stable```分支发布，```requriements.txt```中将会固定所有环境，目前第一次稳定版本是```0.5.3```，但是未更正上一条BUG，将会在下次发布时修复。
+
+**2025-05-04: **
+
+- 1.```AssistantAgent```在不传入```model_client```时会默认实例化"openai/gpt-4o"。

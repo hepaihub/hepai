@@ -43,6 +43,7 @@ from autogen_agentchat.messages import (
     ThoughtEvent
 )
 
+from hepai.agents import HepAIChatCompletionClient
 from hepai.agents.modules.managers.base_thread import Thread
 from hepai.agents.modules.managers.threads_manager import ThreadsManager
 from hepai.agents.modules.managers.base_thread_message import ThreadMessage, Content, Text
@@ -59,8 +60,8 @@ class DrSaiAgent(AssistantAgent):
     def __init__(
         self,
         name: str,
-        model_client: ChatCompletionClient,
         *,
+        model_client: ChatCompletionClient = None,
         tools: List[BaseTool[Any, Any] | Callable[..., Any] | Callable[..., Awaitable[Any]]] | None = None,
         workbench: Workbench | None = None,
         handoffs: List[HandoffBase | str] | None = None,
@@ -86,6 +87,9 @@ class DrSaiAgent(AssistantAgent):
         memory_function: 自定义的memory_function，用于RAG检索等功能，为大模型回复增加最新的知识
         reply_function: 自定义的reply_function，用于自定义对话回复的定制
         '''
+        if not model_client:
+            model_client = HepAIChatCompletionClient(model="openai/gpt-4o", api_key=os.environ.get("HEPAI_API_KEY"))
+        
         super().__init__(
             name, 
             model_client,
