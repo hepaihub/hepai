@@ -29,7 +29,7 @@ httpx>=0.28.1
 
 markdown
 
-# for drsai agents
+# for agents
 autogen-agentchat>=0.5.5
 autogen-core>=0.5.5
 autogen-ext>=0.5.5

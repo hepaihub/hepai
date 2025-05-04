@@ -84,27 +84,42 @@ pip install hepai --upgrade
 hepai -V  # 查看版本
 ```
 
-#### 1. 调用HepAI模型
+1. 命令行使用
 
-```python
+    ```bash
+    hai train <model_name>  # 训练模型, 例如: hai train particle_transformer
+    hai eval <model_name>
+    ```
+
+2. python库使用
+
+    python库统一接口：
+    ```python
+    import hepai as hai
+    
+    model = hai.hub.load('<model_name>')  # 加载模型
+    config = model.config  # 获取模型配置
+    config.batch_size = 32  # 修改配置
+    model.trian()  # 训练模型
+    model.eval()  # 评估模型
+    model.infer('<data>')  # 模型推理
+    hai.train('particle_transformer')
+    ```
+
+3. 部署和远程调用
+
+    跨语言、跨平台的模型部署和远程调用
+
+    服务端：
+    ```bash
+    hai start server  # 启动服务
+    ```
+    客户端
+    ```python
     from hepai import HepAI
     
-    client = HepAI(api_key="your_api_key")
+    client = HepAI()
     models = client.list_models()
-    response = client.chat.completion.create(
-        model="hepai/deepseek-r1:671b", 
-        prompt="你好",
-        )
+    response = client.chat.completion.create(model="hepai/xiwu_v2", prompt="你好", max_tokens=100)
     print(response.choices[0].text)
-```
-
-+ api_key在[HepAI平台](https://ai.ihep.ac.cn/)中自行创建获取
-
-#### 2. 使用算力资源
-
-[高能AI算力集群用户手册](https://ai.ihep.ac.cn/cp/docs/)
-
-#### X. 智能体
-
-TODO
-
+    ```
