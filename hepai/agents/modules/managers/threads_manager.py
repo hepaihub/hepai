@@ -159,10 +159,10 @@ class ThreadsManager(BaseJsonSaver):
         metadata: Dict = kwargs.get('metadata', {})
 
         # thread_id = self.auto_id(prefix='thread_', length=30)
-        # 使用openwebui的dialog_id作为thread_id
-        dialog_id = kwargs.get('dialog_id', None)
-        if dialog_id:
-            thread_id = 'thread_'+dialog_id
+        # 使用openwebui的chat_id作为thread_id
+        chat_id = kwargs.get('chat_id', None)
+        if chat_id:
+            thread_id = 'thread_'+chat_id
         else:
             thread_id = self.auto_id(prefix='thread_', length=30)
             

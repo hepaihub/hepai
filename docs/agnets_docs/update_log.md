@@ -35,3 +35,11 @@
 **2025-05-04: **
 
 - 1.```AssistantAgent```在不传入```model_client```时会默认实例化"openai/gpt-4o"。
+
+- 2.在```AssistantAgent```的```reply_function```中，传入的tools类型改为Autogen-0.5.5版的新类型-Workbench：```tools: Union[StaticWorkbench, Workbench]```。Workbench可以将传入的函数和参数封装成一个对象，方便后续调用和执行，具体示例见```drsai/modules/baseagent/toolagent.py```和```examples/oai_client/assistantagent_tool_call_reply_oai.py```。
+
+- 3.增加了```tools_reply_function```和```tools_recycle_reply_function```两个针对工具执行的自定义回复函数，具体见```drsai/modules/baseagent/toolagent.py```和```examples/oai_client/assistantagent_tool_call_reply_oai.py```：
+**tools_reply_function**：在执行工具时，如果有返回值，则使用大模型对返回值进行整理成人类可读的文本，并返回给用户。
+**tools_recycle_reply_function**：在执行任务需要多个工具时，先根据任务进行多工具使用规划，然后按照规划好的工具执行，并将执行结果整理成人类可读的文本，并返回给用户。
+
+- 4.opendrsai支持了SWARM的多智能体系统与前端适配，能够无缝与前端对话。通过解析最后```TaskResult```中最后一条消息是否是```HandoffMessage```，且```target```是"user"，来通过thread保留上一轮对话的状态。注意：必须将AssissantAgent中的handoffs角色转移中的人类名称确定为"user"，才能被正确的启动上一轮对话。具体见```examples/oai_client/swarm_groupchat_oai.py```。

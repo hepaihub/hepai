@@ -74,7 +74,7 @@ class ThreadRun(BaseObject):
     @property
     def thread(self):
         if self._thread is None:
-            from drsai import THREADS_MGR
+            from hepai.agents import THREADS_MGR
             self._thread = THREADS_MGR.retrieve_thread(self.thread_id, username=self.username)
         return self._thread
     
@@ -85,7 +85,7 @@ class ThreadRun(BaseObject):
     @property
     def assistants(self):
         if self._assistants is None:
-            from drsai import ASSISTANTS_MGR
+            from hepai.agents import ASSISTANTS_MGR
             if isinstance(self.assistant_id, str):
                 assistant_ids = [self.assistant_id]
             else:

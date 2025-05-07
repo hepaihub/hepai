@@ -217,6 +217,7 @@ class DrSaiRoundRobinGroupChat(DrSaiGroupChat):
                 termination_condition,
                 max_turns,
                 message_factory,
+                self._emit_team_events,
                 thread=self._thread,
                 thread_mgr=self._thread_mgr,
             )

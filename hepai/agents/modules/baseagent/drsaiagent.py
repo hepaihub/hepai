@@ -7,6 +7,7 @@ import asyncio
 import logging
 import inspect
 import json
+import os
 
 from pydantic import BaseModel
 
@@ -158,7 +159,7 @@ class DrSaiAgent(AssistantAgent):
             self, 
             llm_messages: List[LLMMessage],
             model_client: ChatCompletionClient,
-            tools: List[BaseTool[Any, Any]],
+            tools: Workbench,
             agent_name: str,
             cancellation_token: CancellationToken,
             thread: Thread = None,
@@ -325,20 +326,20 @@ class DrSaiAgent(AssistantAgent):
 
         tools = (await workbench.list_tools()) + handoff_tools
         all_tools = tools + handoff_tools
-        model_result: Optional[CreateResult] = None
+        # model_result: Optional[CreateResult] = None
         if self._reply_function is not None:
             # 自定义的reply_function，用于自定义对话回复的定制
             async for chunk in self._call_reply_function(
                 llm_messages, 
                 model_client = model_client, 
-                tools=all_tools, 
+                tools=workbench, 
                 agent_name=agent_name, 
                 cancellation_token=cancellation_token,
                 thread = self._thread,
                 thread_mgr = self._thread_mgr,
             ):
-                if isinstance(chunk, CreateResult):
-                    model_result = chunk
+                # if isinstance(chunk, CreateResult):
+                #     model_result = chunk
                 yield chunk
         else:
            async for chunk in self.call_llm(
@@ -350,129 +351,6 @@ class DrSaiAgent(AssistantAgent):
                 cancellation_token = cancellation_token,
                 output_content_type = output_content_type,
            ):
-               if isinstance(chunk, CreateResult):
-                    model_result = chunk
+            #    if isinstance(chunk, CreateResult):
+            #         model_result = chunk
                yield chunk
-
-    @staticmethod
-    async def _execute_tool_call(
-        tool_call: FunctionCall,
-        workbench: Workbench,
-        handoff_tools: List[BaseTool[Any, Any]],
-        agent_name: str,
-        cancellation_token: CancellationToken,
-    ) -> Tuple[FunctionCall, FunctionExecutionResult]:
-        """Execute a single tool call and return the result."""
-        # Load the arguments from the tool call.
-        try:
-            arguments = json.loads(tool_call.arguments)
-        except json.JSONDecodeError as e:
-            return (
-                tool_call,
-                FunctionExecutionResult(
-                    content=f"Error: {e}",
-                    call_id=tool_call.id,
-                    is_error=True,
-                    name=tool_call.name,
-                ),
-            )
-
-        # Check if the tool call is a handoff.
-        # TODO: consider creating a combined workbench to handle both handoff and normal tools.
-        for handoff_tool in handoff_tools:
-            if tool_call.name == handoff_tool.name:
-                # Run handoff tool call.
-                result = await handoff_tool.run_json(arguments, cancellation_token)
-                result_as_str = handoff_tool.return_value_as_string(result)
-                return (
-                    tool_call,
-                    FunctionExecutionResult(
-                        content=result_as_str,
-                        call_id=tool_call.id,
-                        is_error=False,
-                        name=tool_call.name,
-                    ),
-                )
-
-        # Handle normal tool call using workbench.
-        result = await workbench.call_tool(
-            name=tool_call.name,
-            arguments=arguments,
-            cancellation_token=cancellation_token,
-        )
-
-        # 从执行的result中获取返回值，并转换为字符串
-        result_as_str = ""
-        if isinstance(result, ToolResult):
-            results = result.result
-            for r in results:
-                if isinstance(r, TextResultContent):
-                    try:
-                        json_result = json.loads(r.content)
-                        if isinstance(json_result, list):
-                            for item in json_result:
-                                result_as_str = item["text"] + "\n"
-                    except json.JSONDecodeError:
-                        result_as_str = r.content
-        else:
-            pass
-        return (
-            tool_call,
-            FunctionExecutionResult(
-                # content=result.to_text(),
-                content=result_as_str,
-                call_id=tool_call.id,
-                is_error=result.is_error,
-                name=tool_call.name,
-            ),
-        )
-    
-    # @staticmethod
-    # async def _execute_tool_call(
-    #     tool_call: FunctionCall,
-    #     tools: List[BaseTool[Any, Any]],
-    #     handoff_tools: List[BaseTool[Any, Any]],
-    #     agent_name: str,
-    #     cancellation_token: CancellationToken,
-    # ) -> Tuple[FunctionCall, FunctionExecutionResult]:
-    #     """Execute a single tool call and return the result."""
-    #     try:
-    #         all_tools = tools + handoff_tools
-    #         if not all_tools:
-    #             raise ValueError("No tools are available.")
-    #         tool = next((t for t in all_tools if t.name == tool_call.name), None)
-    #         if tool is None:
-    #             raise ValueError(f"The tool '{tool_call.name}' is not available.")
-    #         arguments: Dict[str, Any] = json.loads(tool_call.arguments) if tool_call.arguments else {}
-    #         result = await tool.run_json(arguments, cancellation_token)
-            
-    #         # 从执行的result中获取返回值，并转换为字符串
-    #         if isinstance(result, list):
-    #             result = result[0].text
-    #         elif isinstance(result, TextContent):
-    #             result = result.get("text", "")
-    #         else:
-    #             pass
-
-    #         result_as_str = tool.return_value_as_string(result)
-    #         return (
-    #             tool_call,
-    #             FunctionExecutionResult(
-    #                 content=result_as_str,
-    #                 call_id=tool_call.id,
-    #                 is_error=False,
-    #                 name=tool_call.name,
-    #             ),
-    #         )
-    #     except Exception as e:
-    #         return (
-    #             tool_call,
-    #             FunctionExecutionResult(
-    #                 content=f"Error: {e}",
-    #                 call_id=tool_call.id,
-    #                 is_error=True,
-    #                 name=tool_call.name,
-    #             ),
-    #         )
-
-
