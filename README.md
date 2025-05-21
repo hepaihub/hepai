@@ -108,3 +108,8 @@ hepai -V  # 查看版本
 
 TODO
 
+
+#### workers
+
++ PDF, PPT, Word等解析器：https://code.ihep.ac.cn/xdb/markitdown_worker
+

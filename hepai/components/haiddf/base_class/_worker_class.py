@@ -1,7 +1,7 @@
 """
 基础类的定义
 """
-
+import os
 import time
 from dataclasses import dataclass, field, asdict
 from typing import List, Dict, Literal, Union, Optional, Any
@@ -73,8 +73,8 @@ class BaseWorkerModel:
     def connect(
         cls,
         name: str,  # 远程模型的名称
-        base_url: str,  # 远程模型的地址
-        # api_key: str = None,  # 远程模型的API Key
+        base_url: str = "https://aiapi.ihep.ac.cn/apiv2",  # 远程模型的地址
+        api_key: str = None,  # 远程模型的API Key
         **kwargs,
         ):
 
@@ -83,10 +83,12 @@ class BaseWorkerModel:
         # 将 httpx 的日志记录级别调整为 WARNING
         logging.getLogger("httpx").setLevel(logging.WARNING)
         
+        api_key = api_key if api_key else os.environ.get("HEPAI_API_KEY")
+        
         from hepai import HepAI
         client = HepAI(
             base_url=base_url,
-            # api_key=api_key,
+            api_key=api_key,
             **kwargs,
             )
 
@@ -204,10 +206,10 @@ class HRemoteModel(BaseWorkerModel):
 
 class HRModel(HRemoteModel):
     """
-    Alias of HRemoteModel
+    Alias of HepAI Remote Model
     """
     ...
-
+    
 
 @dataclass
 class ModelResourceInfo:

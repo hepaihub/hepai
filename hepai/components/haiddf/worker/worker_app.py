@@ -6,6 +6,7 @@ from typing import Dict, List, Literal, Optional, Union, Generator, Callable
 from dataclasses import dataclass, field
 
 from fastapi import FastAPI, APIRouter, Request, HTTPException
+from fastapi import UploadFile, File, Form, Query, Body
 from fastapi.background import BackgroundTasks
 from fastapi.responses import JSONResponse, StreamingResponse, FileResponse, HTMLResponse
 
@@ -95,9 +96,14 @@ class HWorkerAPP(FastAPI):
         router.post("/worker_unified_gate/{model}/{function}")(self.worker_unified_gate)  # 多模型模式下，需要指定模型
         router.get("/worker_get_status")(self.worker_get_status)
         router.post("/shutdown_worker")(self.shutdown_worker)
+        
         router.post("/worker/get_worker_info")(self.get_worker_info)  # 这个路由是为了与controller相同的格式，使得client也能调用
         router.post("/worker/unified_gate")(self.worker_unified_gate)  # 这个路由是为了与controller相同的格式，使得client也能调用
         router.get("/models")(self.get_models)
+        
+        # files router
+        files_router = APIRouter(prefix=router_prefix, tags=["files"])
+        
 
         self.include_router(router)
 
@@ -193,6 +199,7 @@ class HWorkerAPP(FastAPI):
             function_params: FunctionParamsItem,
             model: str = None,
             function: str = "__call__",
+            file: UploadFile = File(None),
             ):
         # global model_semaphore, global_counter
         model_semaphore = self.model_semaphore  # 这个是用于获取队列长度的
