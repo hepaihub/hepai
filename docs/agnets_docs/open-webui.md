@@ -10,4 +10,4 @@ Link: https://github.com/open-webui/open-webui
 # if before_tag:
 #     content_blocks[-1]["content"] = before_tag
 ```
-- 2.前端的chat_id通过"dialog_id"传递给了后端。
+- 2.前端的chat_id通过"chat_id"传递给了后端。

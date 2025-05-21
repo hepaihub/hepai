@@ -8,6 +8,8 @@ from hepai.agents.modules.baseagent.drsaiagent import DrSaiAgent as AssistantAge
 
 # Groupchat
 from hepai.agents.modules.groupchat._round_robin_group_chat import DrSaiRoundRobinGroupChat, DrSaiRoundRobinGroupChatManager
+from hepai.agents.modules.groupchat._selector_group_chat import DrSaiSelectorGroupChat
+from hepai.agents.modules.groupchat._swarm_group_chat import DrSaiSwarm
 from hepai.agents.modules.groupchat._base_group_chat import DrSaiGroupChatManager, DrSaiGroupChat
 
 # manager
@@ -15,6 +17,11 @@ from hepai.agents.modules.managers.base_thread import Thread
 from hepai.agents.modules.managers.threads_manager import ThreadsManager
 from hepai.agents.modules.managers.base_thread_message import ThreadMessage, Content, Text
 
+# reply functions
+from hepai.agents.modules.baseagent.toolagent import tools_reply_function, tools_recycle_reply_function
+
+# # tools
+# from hepai.agents.modules.components.tools.mcps_std import web_fetch
 
 # utils
 from hepai.agents.utils.message_convert import (
@@ -36,6 +43,10 @@ from hepai.agents.backend.run import (
     run_pipelines,
     run_drsai_app)
 from hepai.agents.backend.app_worker import DrSaiAPP
+
+###########
+# Autogen #
+###########
 
 # autogen_ext Models
 from autogen_ext.models.openai import OpenAIChatCompletionClient
@@ -97,6 +108,7 @@ from autogen_agentchat.messages import (
     ToolCallSummaryMessage,
     ModelClientStreamingChunkEvent,
     TextMessage,
+    HandoffMessage,
 )
 
 # autogen_core Tools
@@ -107,6 +119,11 @@ from autogen_core.tools import (
     BaseTool,
     BaseToolWithState,
     FunctionTool,
+    StaticWorkbench,
+    ImageResultContent, 
+    TextResultContent, 
+    ToolResult, 
+    Workbench
     )
 
 # autogen_ext mcp
@@ -116,6 +133,8 @@ from autogen_ext.tools.mcp import (
     StdioServerParams,
     StdioMcpToolAdapter,
     SseMcpToolAdapter,
+    McpWorkbench,
+    create_mcp_server_session,
     mcp_server_tools)
 
 from autogen_core import Image as AGImage
