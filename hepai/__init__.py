@@ -17,6 +17,6 @@ from .types import Stream, ChatCompletion, ChatCompletionChunk
 from .types import HRModel, LRModel, HModelConfig, HWorkerConfig, HWorkerAPP, RemoteModel
 from .components.utils import connect
 
-from .agents import *
+# from .agents import *
 
 

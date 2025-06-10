@@ -113,8 +113,11 @@ class Worker(SyncAPIResource):
             payload["kwargs"] = kwargs
         
         # 适配文件上传，可从file字段中提取文件
-        files = extract_files(cast(Mapping[str, object],  payload["kwargs"]), paths=[["file"]])
+        files = extract_files(cast(Mapping[str, object], kwargs), paths=[["file"]])
         payload = deepcopy_minimal(payload)
+        
+        # if True:
+        #     payload = {'function_params': payload}
         
         extra_headers = None  # Headers
         extra_query = None  # Query

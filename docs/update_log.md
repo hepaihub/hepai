@@ -1,5 +1,6 @@
 # 更新日志
 
++ 2025.06.10 v1.1.35 修复RemoteModel由文件系统产生的bug
 + 2025.04.27 v1.1.34 支持原opendrsai智能体与多智能体协作框架，将from drsai 改为 from hepai.agents即可，具体见 https://code.ihep.ac.cn/hepai/drsai。修复了hai.LLM.chat()方法的bug。
 + 2025.04.25 v1.1.33 支持agents，from hepai.agents import AssistantAgent
 + 2025.04.22 v1.1.32 更新HepAI Client，支持openai 1.75.0，不再使用本地openai文件，支持pydantic>=2.11

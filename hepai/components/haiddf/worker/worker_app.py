@@ -199,7 +199,7 @@ class HWorkerAPP(FastAPI):
             function_params: FunctionParamsItem,
             model: str = None,
             function: str = "__call__",
-            file: UploadFile = File(None),
+            # file: UploadFile = File(None),
             ):
         # global model_semaphore, global_counter
         model_semaphore = self.model_semaphore  # 这个是用于获取队列长度的
